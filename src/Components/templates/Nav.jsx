@@ -3,15 +3,29 @@ import {Nav,Navbar} from 'react-bootstrap'
 import {Link,useHistory } from 'react-router-dom'
 
 export default class Navigation extends React.Component{
+    state={
+        name:'',
+    }
 
+    componentDidMount(){
 
+        const payload =JSON.parse(localStorage.getItem('__userKey'))
+        if(payload){
+        //    console.log(payload.name)
+        let name=payload.name
+        this.setState({name})
+        }
+
+    }
 
     render(){
         // console.log(this)
+        const { name } = this.state
+
         return(
             <div className='m-4 pb-3'>
             <Navbar collapseOnSelect expand="lg" bg="light" variant="light" fixed='top'>
-             <Navbar.Brand href="#home">Personate </Navbar.Brand>
+            {name!==''?  <Navbar.Brand href="#home">Personate {name} </Navbar.Brand>: <Navbar.Brand href="#home">Personate </Navbar.Brand>}
              <Navbar.Toggle aria-controls="responsive-navbar-nav" />
              <Navbar.Collapse id="responsive-navbar-nav">
                  <Nav className="mr-auto ml-2">
