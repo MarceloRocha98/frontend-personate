@@ -7,6 +7,11 @@ export default class Home extends React.Component{
     state={
         isLoggedIn:false,
 
+        //// states testes abaixo
+
+        points:0,
+        listPoints:[],
+
 
     }
 
@@ -27,10 +32,48 @@ export default class Home extends React.Component{
         }
     }
 
+    async handlePoints(e){
+        e.preventDefault()
+        let {points}=this.state
+        const payload=JSON.parse (localStorage.getItem('__userKey'))
+        const token=payload.token
+        // points=toString(points)
+        // console.log(typeof(points))
+        console.log(points)
+        // console.log(token)
+
+        const data={
+            status_text:points
+        }
+        
+        
+        api.defaults.headers.common['Authorization'] = `Token ${token}`
+        await api.post('http://localhost:8080/api/feed/',data)
+            .then(res=>{
+                console.log(res)
+            }).catch(err=>{
+                console.log(err)
+            })
+
+    }
+
+    async handleListPoints(e){
+        e.preventDefault()
+
+        await api.get('http://localhost:8080/api/feed/')
+            .then(res=>{
+                console.log(res)
+        
+
+            }).catch(err=>{
+                console.log(err)
+            })
+    }
 
     render(){
-        const {isLoggedIn } = this.state
+        const {isLoggedIn, points } = this.state
         // console.log(this.props)
+
         return(
             <div
           
@@ -42,7 +85,35 @@ export default class Home extends React.Component{
                     width:'100%',
                     height:"100%"
                 }}
-                 >Logado</div>:
+                 >Logado !!!!
+
+                 Somente testes abaixo !!!
+
+                <label for='points' className='ml-3'>Alterar pontuação</label>
+                 <input 
+                 id='points'
+                 onChange={e=>{
+                     this.setState({points:e.target.value})
+                    //  console.log(points)
+                 }}
+                 value={points}
+                 />
+                 <button
+                 onClick={e=>{
+                     this.handlePoints(e)
+                 }}
+                 >Enviar</button>
+
+                <label for='list' className='ml-3'>Listar pontuações</label>
+                
+                 <button
+                 onClick={e=>{
+                     this.handleListPoints(e)
+                 }}
+                 >Listar</button>
+                 
+                 
+                 </div>:
                  
                  <div 
                  style={{
