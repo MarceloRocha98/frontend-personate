@@ -63,7 +63,46 @@ export default class Home extends React.Component{
         await api.get('http://localhost:8080/api/feed/')
             .then(res=>{
                 console.log(res)
-        
+                let data=res.data
+                let info=[]
+                data=data.map(e=>{
+
+                    let infoObj={}
+                    infoObj.user_profile=e.user_profile
+                    infoObj.status_text=e.status_text
+                    infoObj.created_on=e.created_on
+                    info.push(infoObj)
+                })
+                console.log(info)
+                this.setState({listPoints:info})
+
+                let newInfo=[]
+                let infoFunc=
+                    info.map(async e=>{
+                    let newInfoObj={}
+                    await api.get(`http://localhost:8080/api/profile/${e.user_profile}`)
+                        .then(user=>{
+                            newInfoObj.user_profile=user.data.name
+                            newInfoObj.status_text=e.status_text
+                            newInfoObj.created_on=e.created_on
+                            newInfo.push(newInfoObj)
+                            // console.log(user.data.name)
+
+                        })
+                    })
+                    // console.log(newInfo)
+                
+                let promise = new Promise(function (resolve, reject) {
+                    // the function is executed automatically when the promise is constructed
+              
+                    // after 1 second signal that the job is done with the result "done"
+                    setTimeout(() => resolve("done"), 2000);
+                });
+                Promise.all([infoFunc, promise]).then((e) => {  // pra resolver o problema do tempo
+                  console.log(newInfo)
+                  this.setState({ listPoints:newInfo})    
+                //   console.log(test)
+                })
 
             }).catch(err=>{
                 console.log(err)
@@ -71,7 +110,7 @@ export default class Home extends React.Component{
     }
 
     render(){
-        const {isLoggedIn, points } = this.state
+        const {isLoggedIn, points, listPoints } = this.state
         // console.log(this.props)
 
         return(
@@ -111,6 +150,19 @@ export default class Home extends React.Component{
                      this.handleListPoints(e)
                  }}
                  >Listar</button>
+
+                 {listPoints.length !== 0 && 
+                 
+                 <div>
+                     {listPoints.map(e=>(
+
+                     <ul>
+                         <li>Nome :{e.user_profile}</li>
+                         <li>Pontos: {e.status_text}</li>
+                         <li>Data: {e.created_on}</li>
+                     </ul>
+                     ))}
+                 </div>}
                  
                  
                  </div>:
