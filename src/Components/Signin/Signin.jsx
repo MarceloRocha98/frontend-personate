@@ -9,6 +9,7 @@ export default function Signin(){
 
     const [email,setEmail]=useState('')
     const [password, setPassword] = useState('')
+    const [username, setUsername] = useState('')
     const history=useHistory()
 
 
@@ -17,21 +18,25 @@ export default function Signin(){
 
 
         const data={
-            username:email,
+            email,
+            username,
             password,
         }
 
        
 
 
-        await api.post('http://localhost:8080/api/login/',data)
+        await api.post('rest_auth/login/',data)
             .then(async res=>{
-                // console.log(res.data.token)
-                const token= res.data.token
+                console.log(res.data)
+                const token= res.data.key
 
+                if(!!token){
+                    api.defaults.headers.common['Authorization'] = `Token ${token}`
+                }
          
 
-                await api.get('http://localhost:8080/api/profile/')
+                await api.get('users')
                     .then(resp=>{
                         console.log(resp)
                         const users=resp.data
@@ -40,11 +45,13 @@ export default function Signin(){
                         })
                         user=user[0]
                         console.log(user)
-                        const name=user.name
+                        const name=user.username
+                        const id=user.id
                         console.log(name)
 
                         const payload={
-                            username:email,
+                            id,
+                            email,
                             name,
                             token,
                         }
@@ -58,7 +65,8 @@ export default function Signin(){
             })
             .catch(err=>{
 
-                console.log(err)
+                console.log(err.response)
+                alert('Usuario e/ou senha errados')
             })
     }
 
@@ -94,9 +102,26 @@ export default function Signin(){
                             <label for='email'>Email</label>
                         </div>
                         <input placeholder='Digite seu email'
+                            name='email'
                             type='email'
                             value={email}
                             onChange={e => setEmail(e.target.value)}
+                            id='email'
+                            className='form-control form-control-lg'
+                        />
+                    </div>
+
+                    <div className="form-group">
+                        <div className='d-flex'>
+
+                        <span class="input-group-addon"><i class="fa fa-user" aria-hidden="true"></i></span>
+                            <label for='email'>Nome</label>
+                        </div>
+                        <input placeholder='Digite seu nome'
+                            name='username'
+                            type='text'
+                            value={username}
+                            onChange={e => setUsername(e.target.value)}
                             id='email'
                             className='form-control form-control-lg'
                         />
@@ -109,6 +134,7 @@ export default function Signin(){
                             <label for='password'>Senha</label>
                         </div>
                 <input
+                    name='password'
                     type='password'
                     placeholder='Digite a sua senha'
                     value={password}

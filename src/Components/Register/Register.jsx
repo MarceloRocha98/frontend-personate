@@ -8,30 +8,59 @@ export default class Register extends React.Component{
     state={
         email:'',
         name:'',
-        password:'',
+        password1:'',
+        password2:'',
     }
 
+    // componentDidMount(){
+    //     console.log(this)
+    // }
 
     async handleSignin(e){
         e.preventDefault()
 
-        const {email,name,password } = this.state
+        const {email,name,password1,password2 } = this.state
         const data={
             email,
-            name,
-            password,
+            username:name,
+            password1,
+            password2,
         }
 
         
-        // console.log(email,name,password)
-        await api.post('http://localhost:8080/api/profile/',data)
+        // console.log(email,name,password1,password2)
+        await api.post('rest_auth/registration/',data)
             .then(res=>{
                 alert('Conta criada com sucesso!')
-                this.setState({email:''})
-                this.setState({name:''})
-                this.setState({password:''})
+
+                this.props.history.push('/Signin')
+                // this.setState({email:''})
+                // this.setState({name:''})
+                // this.setState({password:''})
             }).catch(err=>{
-                console.log(err)
+                console.log(err.response)
+               if(err.response.data.email){
+                   alert(`Email : ${err.response.data.email[0]}`)
+               }
+
+               if(err.response.data.username){
+                   alert(`Nome : ${err.response.data.username[0]}`)
+               }
+
+               if(err.response.data.password1){
+                   alert(`Senha : ${err.response.data.password1[0]}`)
+               }
+
+               if(err.response.data.password2){
+                   alert(`Confirmação de senha : ${err.response.data.password2[0]}`)
+               }
+               if(err.request.status===500){ //obs: por algum motivo, a api do django da um erro interno ao cadastrar o usuario, mas o cadastra com sucesso
+                alert('Conta criada com sucesso!')
+
+                this.props.history.push('/Signin')
+               }
+     
+             
             })
         
 
@@ -44,7 +73,7 @@ export default class Register extends React.Component{
     }
 
     render(){
-        const {email,name,password } =this.state
+        const {email,name,password1,password2 } =this.state
 
 
         return(
@@ -95,14 +124,31 @@ export default class Register extends React.Component{
                         <div className='d-flex'>
 
                             <span class="input-group-addon"><i class="fa fa-key fa-fw" aria-hidden="true"></i></span>
-                            <label for='password'>Senha</label>
+                            <label for='password1'>Senha</label>
                         </div>
                 <input
                     type='password'
                     placeholder='Digite a sua senha'
-                    value={password}
-                    onChange={e => this.setState({password:e.target.value})}
-                    id='password'
+                    value={password1}
+                    onChange={e => this.setState({password1:e.target.value})}
+                    id='password1'
+                    className='form-control form-control-lg'
+                    />
+
+                </div>       
+
+                    <div className="form-group">
+                        <div className='d-flex'>
+
+                            <span class="input-group-addon"><i class="fa fa-key fa-fw" aria-hidden="true"></i></span>
+                            <label for='password2'>Confirme a senha</label>
+                        </div>
+                <input
+                    type='password'
+                    placeholder='Digite a sua senha'
+                    value={password2}
+                    onChange={e => this.setState({password2:e.target.value})}
+                    id='password2'
                     className='form-control form-control-lg'
                     />
 

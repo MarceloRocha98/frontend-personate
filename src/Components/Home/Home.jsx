@@ -11,13 +11,14 @@ export default class Home extends React.Component{
 
         points:0,
         listPoints:[],
+        difficulty:0,
 
 
     }
 
 
     async componentDidMount(){
-
+        console.log(this.props)
         const payload=JSON.parse(localStorage.getItem('__userKey'))
 
         // console.log(payload.token)
@@ -34,33 +35,71 @@ export default class Home extends React.Component{
 
     async handlePoints(e){
         e.preventDefault()
-        let {points}=this.state
+        let {points,difficulty}=this.state
         const payload=JSON.parse (localStorage.getItem('__userKey'))
         const token=payload.token
+        const user_id=payload.id
+
         // points=toString(points)
         // console.log(typeof(points))
         console.log(points)
         // console.log(token)
 
-        const data={
-            status_text:points
+        let data={
+            points,
+            difficulty
         }
         
         
         api.defaults.headers.common['Authorization'] = `Token ${token}`
-        await api.post('http://localhost:8080/api/feed/',data)
+
+        let hadPreviousPoints=false
+        let points_id=0
+        await api.get('rank',data)
             .then(res=>{
-                console.log(res)
+                const data=res.data
+                let previousPoints=data.filter(e=>{
+                    return e.user_id === user_id
+                })
+
+                if(previousPoints.length !== 0){
+                    hadPreviousPoints = true
+                    points_id=previousPoints[0].id
+                }
             }).catch(err=>{
-                console.log(err)
+                alert("Erro")
+                console.log(err.response)
             })
+
+            if(hadPreviousPoints){
+                await api.patch(`rank/${points_id}/`,data)
+                    .then(res=>{
+                        alert('Pontos alterados com sucesso')
+                    })
+                    .catch(err=>{
+                        alert("Erro")
+                        console.log(err.response)
+                    })
+            }else{ 
+
+                data.user_id=user_id
+                
+                await api.post('rank/',data)
+                    .then(res=>{
+                        alert('Pontos incluidos com sucesso')
+                    })
+                    .catch(err=>{
+                        alert("Erro")
+                        console.log(err.response)
+                    })
+            }
 
     }
 
     async handleListPoints(e){
         e.preventDefault()
 
-        await api.get('http://localhost:8080/api/feed/')
+        await api.get('rank/')
             .then(res=>{
                 console.log(res)
                 let data=res.data
@@ -68,9 +107,10 @@ export default class Home extends React.Component{
                 data=data.map(e=>{
 
                     let infoObj={}
-                    infoObj.user_profile=e.user_profile
-                    infoObj.status_text=e.status_text
-                    infoObj.created_on=e.created_on
+                    infoObj.user_id=e.user_id
+                    infoObj.points=e.points
+                    infoObj.difficulty=e.difficulty
+                    infoObj.data=e.data
                     info.push(infoObj)
                 })
                 console.log(info)
@@ -80,13 +120,23 @@ export default class Home extends React.Component{
                 let infoFunc=
                     info.map(async e=>{
                     let newInfoObj={}
-                    await api.get(`http://localhost:8080/api/profile/${e.user_profile}`)
+                    await api.get(`users/${e.user_id}/`)
                         .then(user=>{
-                            newInfoObj.user_profile=user.data.name
-                            newInfoObj.status_text=e.status_text
-                            newInfoObj.created_on=e.created_on
+                            // console.log(user)
+                            let dificuldade='Fácil'
+                            if(e.difficulty===1){
+                                dificuldade='Médio'
+                            }
+                            if(e.difficulty===2){
+                                dificuldade='Díficil'
+                            }
+                            newInfoObj.user_id=user.data.username
+                            newInfoObj.points=e.points
+                            newInfoObj.difficulty=dificuldade
+                            newInfoObj.data=e.data
                             newInfo.push(newInfoObj)
                             // console.log(user.data.name)
+                            newInfoObj={}
 
                         })
                     })
@@ -110,7 +160,7 @@ export default class Home extends React.Component{
     }
 
     render(){
-        const {isLoggedIn, points, listPoints } = this.state
+        const {isLoggedIn, points, listPoints,difficulty } = this.state
         // console.log(this.props)
 
         return(
@@ -128,6 +178,17 @@ export default class Home extends React.Component{
 
                  Somente testes abaixo !!!
 
+         <div className='d-flex flex-column'>
+
+                <label for='points' className='ml-3'>Dificuldade</label>
+                 <input 
+                 id='points'
+                 onChange={e=>{
+                     this.setState({difficulty:e.target.value})
+                    //  console.log(points)
+                 }}
+                 value={difficulty}
+                 />
                 <label for='points' className='ml-3'>Alterar pontuação</label>
                  <input 
                  id='points'
@@ -142,6 +203,8 @@ export default class Home extends React.Component{
                      this.handlePoints(e)
                  }}
                  >Enviar</button>
+            </div>
+           
 
                 <label for='list' className='ml-3'>Listar pontuações</label>
                 
@@ -157,14 +220,20 @@ export default class Home extends React.Component{
                      {listPoints.map(e=>(
 
                      <ul>
-                         <li>Nome :{e.user_profile}</li>
-                         <li>Pontos: {e.status_text}</li>
-                         <li>Data: {e.created_on}</li>
+                         <li>Nome :{e.user_id}</li>
+                         <li>Pontos: {e.points}</li>
+                         <li>Dificuldade: {e.difficulty}</li>
+                         <li>Data: {e.data}</li>
                      </ul>
                      ))}
                  </div>}
                  
-                 
+                 <button
+                 onClick={e=>this.props.history.push('/GamesCreated')}
+                 >Ir para jogos criados</button>
+                 <button
+                 onClick={e=>this.props.history.push('/Challanges')}
+                 >Ir para desafios</button>
                  </div>:
                  
                  <div 
