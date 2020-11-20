@@ -1,7 +1,8 @@
 import React from 'react'
 import {Nav,Navbar} from 'react-bootstrap'
 import {Link,useHistory } from 'react-router-dom'
-
+import api from '../../services/api'
+;
 export default class Navigation extends React.Component{
     state={
         name:'',
@@ -30,9 +31,11 @@ export default class Navigation extends React.Component{
              <Navbar.Collapse id="responsive-navbar-nav">
                  <Nav className="mr-auto ml-2">
                      
+                    {name !=='' && <div className='d-flex'>
                      <Nav.Link href="#Rank">Rank</Nav.Link>
-                     <Nav.Link href="#GamesCreated">Jogos Criados</Nav.Link>
+                    <Nav.Link href="#GamesCreated">Jogos Criados</Nav.Link>
                      <Nav.Link href="#Challanges">Desafios</Nav.Link>
+                        </div>}
                  </Nav>
                  <Nav>
 
@@ -48,9 +51,17 @@ export default class Navigation extends React.Component{
                          //  margin:'3px'
                           
                       }}
-                      onClick={e=>{
-                        localStorage.removeItem('__userKey')
-                        this.props.history.push('/Signin')
+                      onClick={async e=>{
+                          const payload=JSON.parse(localStorage.getItem('__userKey'))
+                          const token=payload.token
+                          await api.get('rest_auth/logout/')
+                            .then(res=>{
+                                localStorage.removeItem('__userKey')
+                                this.props.history.push('/Signin') 
+                            }).catch(err=>{
+                                console.log(err.response.data)
+                            })
+        
                       }}
                   className='btn btn-danger'
                   

@@ -248,7 +248,7 @@ export default class Challanges extends React.Component{
         const {challanges_info, users, sortedGames,challanged_info, sortedGames2,play2 } = this.state //username,user_id,accepted,challange_id tem no challanges_info
         return(
             <div className='d-flex flex-column'>
-                <Nav />
+                <Nav isLoggedIn={true} />
 
                 <div className='d-flex mb-5 flex-column align-self-center mt-4 pt-2 justify-content-center'>
                 

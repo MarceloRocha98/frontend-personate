@@ -254,26 +254,11 @@ style={{
                    style={{
                        color:"white"
                    }}
-                   ><i class="fa fa-fire mr-1" style={{color:"red"}} aria-hidden="true"></i>Jogar como usuario cadastrado</h4>
+                   ><i class="fa fa-fire mr-1" style={{color:"red"}} aria-hidden="true"></i>Jogar</h4>
                      </Link>
 </div>
 
-                   <p className='font-weight-bold ml-5 pl-3'  
-                    style={{
-                       color:"white"
-                   }}>Ou</p>
-<div className='d-flex'>
 
-                   <Link to=''>
-
-                   <h4
-                    className='text-left '
-                    style={{
-                        color:"white"
-                    }}
-                    ><i class="fa fa-fire mr-1" style={{color:"red"}} aria-hidden="true"></i>Jogar como visitante </h4>
-                   </Link>
-</div>
                 </div>
                  </div>}
               </div>

@@ -4,7 +4,8 @@ import Nav from '../templates/Nav'
 
 export default class Rank extends React.Component{
     state={
-        listPoints:[]
+        listPoints:[],
+        isLoggedIn:false,
     }
 
     async componentDidMount(){
@@ -14,6 +15,7 @@ export default class Rank extends React.Component{
         let token=''
         if(payload){
              token=payload.token
+             this.setState({isLoggedIn:true})
         }
         api.defaults.headers.common['Authorization'] = `Token ${token}`
         await api.get('rank/')
@@ -83,7 +85,7 @@ export default class Rank extends React.Component{
         return(
                     <div>
 
-                        <Nav />
+                        <Nav isLoggedIn={this.state.isLoggedIn} />
 
                         <div className='mt-5 pt-3'>
                             <h2 className='text-center font-weight-bold'>Rank</h2>

@@ -29,7 +29,7 @@ export default class GamesCreated extends React.Component{
         
         return(
             <div className='d-flex flex-column'>
-                <Nav />
+                <Nav isLoggedIn={true} />
 
                 <div className='mt-3 d-flex flex-column jogoscriados'>
 
