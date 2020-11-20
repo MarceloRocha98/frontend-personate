@@ -30,7 +30,9 @@ export default class Navigation extends React.Component{
              <Navbar.Collapse id="responsive-navbar-nav">
                  <Nav className="mr-auto ml-2">
                      
-                     <Nav.Link href="#pricing">RANK</Nav.Link>
+                     <Nav.Link href="#Rank">Rank</Nav.Link>
+                     <Nav.Link href="#GamesCreated">Jogos Criados</Nav.Link>
+                     <Nav.Link href="#Challanges">Desafios</Nav.Link>
                  </Nav>
                  <Nav>
 

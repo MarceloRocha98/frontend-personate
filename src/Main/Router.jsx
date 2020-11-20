@@ -9,6 +9,8 @@ import GameCreatedPlay from '../Components/GamesCreated/GameCreatedPlay'
 import Create from '../Components/GamesCreated/Create'
 import PrivateRoute from '../Main/PrivateRoute'
 import Challanges from '../Components/Challanges/Challanges'
+import Game from '../Components/Game'
+import Rank from '../Components/Rank/Rank'
 export default class Main extends React.Component{
 
     render(){
@@ -24,6 +26,8 @@ export default class Main extends React.Component{
                 <PrivateRoute  path='/GameCreatedPlay' component={GameCreatedPlay} />
                 <PrivateRoute  path='/Create' component={Create} />
                 <PrivateRoute  path='/Challanges' component={Challanges} />
+                <PrivateRoute  path='/Game' component={Game} />
+                <PrivateRoute  path='/Rank' component={Rank} />
                 <Redirect from='*' to='/' />
             </Switch>
         )

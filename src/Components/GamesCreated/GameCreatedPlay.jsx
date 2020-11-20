@@ -1,7 +1,7 @@
 import React from 'react'
 import api from '../../services/api'
-
-
+import Game from '../Game'
+import Nav from '../templates/Nav'
 
 export default class GamesCreated extends React.Component{
     state={
@@ -27,7 +27,7 @@ export default class GamesCreated extends React.Component{
 
         return(
             <div className='d-flex flex-column'>
-                 <ul>
+                 {/* <ul>
                         <li> {game.game_name}</li>
                         <img 
                         src={game.url_img1}
@@ -50,7 +50,29 @@ export default class GamesCreated extends React.Component{
                                         {game.nome2_img3}
                                         {game.nome3_img3}
                                 </div>
-                    </ul>
+                    </ul> */}
+                    <div className='mb-5 pb-3'>
+
+                    <Nav />
+                    </div>
+                   <h3 className='text-center font-weight-bold'> {game.game_name}</h3>
+                    <Game 
+    url_img1={game.url_img1} 
+    url_img2={game.url_img2} 
+    url_img3={game.url_img3} 
+    nome1_img1={game.nome1_img1}
+    nome2_img1={game.nome2_img1}
+    nome3_img1={game.nome3_img1}
+    nome1_img2={game.nome1_img2}
+    nome2_img2={game.nome2_img2}
+    nome3_img2={game.nome3_img2}
+    nome1_img3={game.nome1_img3}
+    nome2_img3={game.nome2_img3}
+    nome3_img3={game.nome3_img3}
+    nome_certo_img1={game.nome_certo_img1}
+    nome_certo_img2={game.nome_certo_img2}
+    nome_certo_img3={game.nome_certo_img3}
+    />
 
              </div>
         )

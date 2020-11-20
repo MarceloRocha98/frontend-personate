@@ -1,8 +1,9 @@
 import React from 'react'
 import {Link } from 'react-router-dom'
 import api from '../../services/api'
-
+import {Dropdown} from 'react-bootstrap'
 import Nav from '../templates/Nav'
+import Game from '../Game'
 export default class Home extends React.Component{
     state={
         isLoggedIn:false,
@@ -12,6 +13,10 @@ export default class Home extends React.Component{
         points:0,
         listPoints:[],
         difficulty:0,
+        finish:false,
+        play:false,
+        sortedGames:[],
+
 
 
     }
@@ -33,134 +38,91 @@ export default class Home extends React.Component{
         }
     }
 
-    async handlePoints(e){
-        e.preventDefault()
-        let {points,difficulty}=this.state
-        const payload=JSON.parse (localStorage.getItem('__userKey'))
+   
+   
+    getRandomInt(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+        return Math.floor(Math.random() * (max - min)) + min;
+      }
+
+    async handlePlay(difficulty){
+        const payload=JSON.parse(localStorage.getItem('__userKey'))
         const token=payload.token
-        const user_id=payload.id
-
-        // points=toString(points)
-        // console.log(typeof(points))
-        console.log(points)
-        // console.log(token)
-
-        let data={
-            points,
-            difficulty
-        }
-        
-        
         api.defaults.headers.common['Authorization'] = `Token ${token}`
 
-        let hadPreviousPoints=false
-        let points_id=0
-        await api.get('rank',data)
+        // let data=[]
+        await api.get("system_images/")
             .then(res=>{
-                const data=res.data
-                let previousPoints=data.filter(e=>{
-                    return e.user_id === user_id
-                })
+                // console.log(res.data)
+            
+                let data= res.data
+                let values=[]
+                let sortedGames=[]
 
-                if(previousPoints.length !== 0){
-                    hadPreviousPoints = true
-                    points_id=previousPoints[0].id
+                if(difficulty === 0){
+                    data=data.filter(data=> data.difficulty === 0)
+                    const count=data.length
+                    while(values.length <3){
+                        let val=this.getRandomInt(0,count)
+                        if(values.indexOf(val) === -1){
+                            values.push(val)
+                    }
+                    }
+                    console.log(values)
+                //    let func= values.map(val=>{
+                //         sortedGames.push(data[val])
+                //     })
+                 
+                //     let promise = new Promise(function (resolve, reject) {
+                //         // the function is executed automatically when the promise is constructed
+                  
+                //         // after 1 second signal that the job is done with the result "done"
+                //         setTimeout(() => resolve("done"), 2000);
+                //     });
+                //     Promise.all([func, promise]).then((e) => {  // pra resolver o problema do tempo
+                    
+        
+                //         this.setState({sortedGames})
+                //         console.log(sortedGames)
+                //     })
                 }
-            }).catch(err=>{
-                alert("Erro")
-                console.log(err.response)
-            })
-
-            if(hadPreviousPoints){
-                await api.patch(`rank/${points_id}/`,data)
-                    .then(res=>{
-                        alert('Pontos alterados com sucesso')
-                    })
-                    .catch(err=>{
-                        alert("Erro")
-                        console.log(err.response)
-                    })
-            }else{ 
-
-                data.user_id=user_id
+                if(difficulty === 1){
+                    data=data.filter(data=> data.difficulty === 1)
+                    const count=data.length
+                    console.log(data)
+                    while(values.length <3){
+                        let val=this.getRandomInt(0,count)
+                        if(values.indexOf(val) === -1){
+                            console.log(val)
+                            values.push(val)
+                    }
+                }
                 
-                await api.post('rank/',data)
-                    .then(res=>{
-                        alert('Pontos incluidos com sucesso')
-                    })
-                    .catch(err=>{
-                        alert("Erro")
-                        console.log(err.response)
-                    })
-            }
-
-    }
-
-    async handleListPoints(e){
-        e.preventDefault()
-
-        await api.get('rank/')
-            .then(res=>{
-                console.log(res)
-                let data=res.data
-                let info=[]
-                data=data.map(e=>{
-
-                    let infoObj={}
-                    infoObj.user_id=e.user_id
-                    infoObj.points=e.points
-                    infoObj.difficulty=e.difficulty
-                    infoObj.data=e.data
-                    info.push(infoObj)
+    
+                }
+                if(difficulty === 2){
+                    data=data.filter(data=> data.difficulty === 2)
+                    const count=data.length
+                    while(values.length <3){
+                        let val=this.getRandomInt(0,count)
+                        if(values.indexOf(val) === -1){
+                            values.push(val)
+                    }
+                    }
+                }
+                console.log(values)
+                values.map(val=>{
+                    sortedGames.push(data[val])
                 })
-                console.log(info)
-                this.setState({listPoints:info})
-
-                let newInfo=[]
-                let infoFunc=
-                    info.map(async e=>{
-                    let newInfoObj={}
-                    await api.get(`users/${e.user_id}/`)
-                        .then(user=>{
-                            // console.log(user)
-                            let dificuldade='Fácil'
-                            if(e.difficulty===1){
-                                dificuldade='Médio'
-                            }
-                            if(e.difficulty===2){
-                                dificuldade='Díficil'
-                            }
-                            newInfoObj.user_id=user.data.username
-                            newInfoObj.points=e.points
-                            newInfoObj.difficulty=dificuldade
-                            newInfoObj.data=e.data
-                            newInfo.push(newInfoObj)
-                            // console.log(user.data.name)
-                            newInfoObj={}
-
-                        })
-                    })
-                    // console.log(newInfo)
+                this.setState({sortedGames})
+                console.log(sortedGames)
                 
-                let promise = new Promise(function (resolve, reject) {
-                    // the function is executed automatically when the promise is constructed
-              
-                    // after 1 second signal that the job is done with the result "done"
-                    setTimeout(() => resolve("done"), 2000);
-                });
-                Promise.all([infoFunc, promise]).then((e) => {  // pra resolver o problema do tempo
-                  console.log(newInfo)
-                  this.setState({ listPoints:newInfo})    
-                //   console.log(test)
-                })
-
-            }).catch(err=>{
-                console.log(err)
             })
     }
 
     render(){
-        const {isLoggedIn, points, listPoints,difficulty } = this.state
+        const {isLoggedIn, points, listPoints,difficulty, sortedGames } = this.state
         // console.log(this.props)
 
         return(
@@ -178,63 +140,88 @@ export default class Home extends React.Component{
 
                  Somente testes abaixo !!!
 
-         <div className='d-flex flex-column'>
+         
 
-                <label for='points' className='ml-3'>Dificuldade</label>
-                 <input 
-                 id='points'
-                 onChange={e=>{
-                     this.setState({difficulty:e.target.value})
-                    //  console.log(points)
-                 }}
-                 value={difficulty}
-                 />
-                <label for='points' className='ml-3'>Alterar pontuação</label>
-                 <input 
-                 id='points'
-                 onChange={e=>{
-                     this.setState({points:e.target.value})
-                    //  console.log(points)
-                 }}
-                 value={points}
-                 />
-                 <button
-                 onClick={e=>{
-                     this.handlePoints(e)
-                 }}
-                 >Enviar</button>
-            </div>
-           
+              
 
-                <label for='list' className='ml-3'>Listar pontuações</label>
+<div className='d-flex d-md-row'>
+<Dropdown>
+  <Dropdown.Toggle variant="danger" id="dropdown-basic">
+ Dificuldade
+  </Dropdown.Toggle>
+
+  <Dropdown.Menu>
+                  <Dropdown.Item onClick={e => {
+                  this.setState({difficulty:0})
                 
-                 <button
-                 onClick={e=>{
-                     this.handleListPoints(e)
-                 }}
-                 >Listar</button>
+                    
+    }}>Fácil</Dropdown.Item>
+                  <Dropdown.Item onClick={e => {
+                    this.setState({difficulty:1})
+                   
+    }}>Médio</Dropdown.Item>
+                  <Dropdown.Item onClick={e => {
+                    this.setState({difficulty:2})
+                   
+    }}>Díficil</Dropdown.Item>
+    
+  </Dropdown.Menu>
+</Dropdown>
+{difficulty===0 && <div style={{
+    background:"orange",
+    borderRadius:"10px",
+    padding:"5px"
+    }}>Fácil </div>}
+{difficulty===1 && <div 
+ style={{
+    background:"orange",
+    borderRadius:"10px",
+    padding:"5px"
+    }}
+>Médio </div>}
+{difficulty===2 && <div
+ style={{
+    background:"orange",
+    borderRadius:"10px",
+    padding:"5px"
+    }}
+>Díficil </div>}
+<button
+onClick={e=>{
+    this.handlePlay(difficulty)
+    this.setState({play:true})
+}}
+className='btn btn-danger ml-2'>
+    Jogar
+</button>
+</div>
 
-                 {listPoints.length !== 0 && 
+  <div> 
+    {this.state.play === true &&  sortedGames.length !==0 &&
+        <Game 
+        url_img1={sortedGames[0].url_img}
+        url_img2={sortedGames[1].url_img}
+        url_img3={sortedGames[2].url_img}
+        nome1_img1={sortedGames[0].nome1}
+        nome2_img1={sortedGames[0].nome2}
+        nome3_img1={sortedGames[0].nome3}
+        nome1_img2={sortedGames[1].nome1}
+        nome2_img2={sortedGames[1].nome2}
+        nome3_img2={sortedGames[1].nome3}
+        nome1_img3={sortedGames[2].nome1}
+        nome2_img3={sortedGames[2].nome2}
+        nome3_img3={sortedGames[2].nome3}
+        nome_certo_img1={sortedGames[0].nome_certo}
+        nome_certo_img2={sortedGames[1].nome_certo}
+        nome_certo_img3={sortedGames[2].nome_certo}
+        isAgainstSystem={true}
+        difficulty={this.state.difficulty}
+        />
+    }
+  </div>
+                 </div>
                  
-                 <div>
-                     {listPoints.map(e=>(
-
-                     <ul>
-                         <li>Nome :{e.user_id}</li>
-                         <li>Pontos: {e.points}</li>
-                         <li>Dificuldade: {e.difficulty}</li>
-                         <li>Data: {e.data}</li>
-                     </ul>
-                     ))}
-                 </div>}
-                 
-                 <button
-                 onClick={e=>this.props.history.push('/GamesCreated')}
-                 >Ir para jogos criados</button>
-                 <button
-                 onClick={e=>this.props.history.push('/Challanges')}
-                 >Ir para desafios</button>
-                 </div>:
+                 :
                  
                  <div 
                  style={{

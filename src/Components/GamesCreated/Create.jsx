@@ -21,6 +21,9 @@ export default class Create extends React.Component{
         nome1_img3:'',
         nome2_img3:'',
         nome3_img3:'',
+        nome_certo_img1:'',
+        nome_certo_img2:'',
+        nome_certo_img3:'',
         
     }
 
@@ -34,7 +37,9 @@ export default class Create extends React.Component{
 
        const {url_img1, url_img2, url_img3, nome1_img1,
          nome1_img2, nome1_img3, nome2_img1,nome2_img2,nome2_img3
-         ,nome3_img1,nome3_img2,nome3_img3, img1,img2,img3,game_name} = this.state
+         ,nome3_img1,nome3_img2,nome3_img3, img1,img2,img3,game_name,
+         nome_certo_img1,nome_certo_img2,nome_certo_img3
+        } = this.state
 
 
          const formData = new FormData()
@@ -52,6 +57,9 @@ export default class Create extends React.Component{
          formData.append("nome1_img3", nome1_img3)
          formData.append("nome2_img3", nome2_img3)
          formData.append("nome3_img3", nome3_img3)
+         formData.append("nome_certo_img1", nome_certo_img1)
+         formData.append("nome_certo_img1", nome_certo_img2)
+         formData.append("nome_certo_img1", nome_certo_img3)
 
         //  for (var value of formData.values()) {
         //     console.log(value); 
@@ -69,6 +77,11 @@ export default class Create extends React.Component{
 
     render(){
         const { games } = this.state
+        const {url_img1, url_img2, url_img3, nome1_img1,
+            nome1_img2, nome1_img3, nome2_img1,nome2_img2,nome2_img3
+            ,nome3_img1,nome3_img2,nome3_img3, img1,img2,img3,game_name,
+            nome_certo_img1,nome_certo_img2,nome_certo_img3
+           } = this.state
         
         return(
             <div className='d-flex flex-column'>
@@ -105,6 +118,10 @@ export default class Create extends React.Component{
                     <input 
                      onChange={e=>this.setState({nome3_img1:e.target.value})}
                     type='text' placeholder='3 opção de nome'></input>
+                    <input 
+                     onChange={e=>this.setState({nome_certo_img1:e.target.value})}
+                    type='text' placeholder='Qual o nome correto?'></input>
+                 
                 </div>
 
             <input 
@@ -126,6 +143,9 @@ export default class Create extends React.Component{
                     <input
                      onChange={e=>this.setState({nome3_img2:e.target.value})}
                     type='text' placeholder='3 opção de nome'></input>
+                     <input 
+                     onChange={e=>this.setState({nome_certo_img2:e.target.value})}
+                    type='text' placeholder='Qual o nome correto?'></input>
                 </div>
 
             <input 
@@ -145,11 +165,30 @@ export default class Create extends React.Component{
                     <input
                      onChange={e=>this.setState({nome3_img3:e.target.value})}
                     type='text' placeholder='3 opção de nome'></input>
+                     <input 
+                     onChange={e=>this.setState({nome_certo_img3:e.target.value})}
+                    type='text' placeholder='Qual o nome correto?'></input>
                 </div>
 
                 </div>
 <button
-onClick={e=>this.handleSubmit()}
+onClick={e=>{
+    if(nome1_img1=== nome_certo_img1 || nome2_img1===nome_certo_img1 || nome3_img1 === nome_certo_img1){
+
+        if(nome1_img2=== nome_certo_img2 || nome2_img2===nome_certo_img2 || nome3_img2 === nome_certo_img2){
+            if(nome1_img3=== nome_certo_img3 || nome2_img3===nome_certo_img3 || nome3_img3 === nome_certo_img3){
+                    this.handleSubmit()
+            }else{
+                alert('A opção correta pra nome da terceira imagem não confere')
+            }
+        }else{
+            alert('A opção correta pra nome da segunda imagem não confere')
+        }
+
+    }else{
+        alert('A opção correta pra nome da primeira imagem não confere')
+    }
+}}
 >
     Criar
 </button>
