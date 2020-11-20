@@ -96,6 +96,33 @@ export default class Game extends React.Component{
 
     }
 
+    async handleChallange(id){
+        const payload=JSON.parse (localStorage.getItem('__userKey'))
+        let data={}
+
+        if(this.props.isChallanger ===false){
+
+             data={
+                challanged_points:this.state.points,
+                challanged_id:payload.id,
+                challanged_finish:true,
+            }
+        }else{
+            data={
+                challanger_points:this.state.points,
+                challanger_finish:true,
+            }
+
+            }
+            await api.patch(`Challanges/${id}/`,data)
+                .then(res=>{
+                    alert('Você finalizou o desafio!')
+                })
+                    .catch(err=>{
+                        console.log(err.response.data)
+                    })
+    }
+
 
 
     render(){
@@ -242,6 +269,9 @@ export default class Game extends React.Component{
                             show_img3:false,
                             finish:true,
                         })
+                        if(this.props.isChallange===true){
+                            this.handleChallange(this.props.challange_id)
+                        }
                     }}
                     className='btn btn-danger'>
                         {this.props.nome1_img3}
@@ -255,6 +285,9 @@ export default class Game extends React.Component{
                                 show_img3:false,
                                 finish:true,
                             })
+                            if(this.props.isChallange===true){
+                                this.handleChallange(this.props.challange_id)
+                            }
                         }}
                     className='btn btn-danger'>
                         {this.props.nome2_img3}
@@ -268,6 +301,9 @@ export default class Game extends React.Component{
                                 show_img3:false,
                                 finish:true,
                             })
+                            if(this.props.isChallange===true){
+                                this.handleChallange(this.props.challange_id)
+                            }
                         }}
                     className='btn btn-danger'>
                         {this.props.nome3_img3}
@@ -277,7 +313,7 @@ export default class Game extends React.Component{
               </div>
               }
 
-              {!!finish && 
+              {!!finish &&  this.props.isChallange===false &&
               
               <div className='align-self-center'>
                  <h3 className='text-center font-weight-bold'> Resultado: {this.state.points}</h3>

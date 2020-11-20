@@ -136,9 +136,7 @@ export default class Home extends React.Component{
                     width:'100%',
                     height:"100%"
                 }}
-                 >Logado !!!!
-
-                 Somente testes abaixo !!!
+                 >Desafie o sistema !
 
          
 
