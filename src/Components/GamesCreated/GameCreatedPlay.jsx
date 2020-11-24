@@ -72,6 +72,7 @@ export default class GamesCreated extends React.Component{
     nome_certo_img1={game.nome_certo_img1}
     nome_certo_img2={game.nome_certo_img2}
     nome_certo_img3={game.nome_certo_img3}
+    isGameCreated={true}
     />
 
              </div>

@@ -4,6 +4,7 @@ import api from '../../services/api'
 import {Dropdown} from 'react-bootstrap'
 import Nav from '../templates/Nav'
 import Game from '../Game'
+
 export default class Home extends React.Component{
     state={
         isLoggedIn:false,
@@ -165,6 +166,8 @@ export default class Home extends React.Component{
     
   </Dropdown.Menu>
 </Dropdown>
+
+   
 {difficulty===0 && <div style={{
     background:"orange",
     borderRadius:"10px",
@@ -194,6 +197,8 @@ className='btn btn-danger ml-2'>
 </button>
 </div>
 
+
+
   <div> 
     {this.state.play === true &&  sortedGames.length !==0 &&
         <Game 
@@ -213,6 +218,7 @@ className='btn btn-danger ml-2'>
         nome_certo_img2={sortedGames[1].nome_certo}
         nome_certo_img3={sortedGames[2].nome_certo}
         isAgainstSystem={true}
+        isChallange={false}
         difficulty={this.state.difficulty}
         />
     }

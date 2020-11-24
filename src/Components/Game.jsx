@@ -329,6 +329,10 @@ export default class Game extends React.Component{
         }
         </div>
                   }
+        {!!this.props.isGameCreated && !!finish &&
+        <div> 
+           <p className='text-center font-weight-bold'> Você fez {points} pontos</p>
+        </div>}
                 
             </div>
         )
