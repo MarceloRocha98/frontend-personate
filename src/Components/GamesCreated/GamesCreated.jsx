@@ -31,25 +31,42 @@ export default class GamesCreated extends React.Component{
             <div className='d-flex flex-column'>
                 <Nav isLoggedIn={true} />
 
-                <div className='mt-3 d-flex flex-column jogoscriados'>
+        <h1 className='text-center mt-4 mb-5'>Jogos criados</h1>
+                <div className='mt-3 d-flex flex-column jogoscriados  justify-content-center'>
 
-                    <button
+    
+                    <div className='align-self-center'>
+                {games.map(game=>(           
+ <div 
+ className='d-flex m-2'>
+     
+   <div class="card"  style={{padding:"30px",width:"200%"}}>
+     <div class="card-body">
+       <h5 class="card-title "> {game.game_name}</h5>
+       
+       <button
+               className='btn btn-danger'
+               onClick={e=>this.handleGame(game.id)}
+                            >
+                                Jogar
+                            </button>
+     </div>
+   </div>
+          
+ </div>
+                       
+                        ))}
+
+                        <div>
+                        <button
+                        style={{width:"90%"}}
+                        className='btn btn-danger align-self-center m-2'
                     onClick={e=>this.props.history.push("/Create")}
                     >
                         Criar novo jogo</button>
-                    <ul>
-                {games.map(game=>(
-                        <li>
-                             {game.game_name}
-                             <button
-                             onClick={e=>this.handleGame(game.id)}
-                                 >
-                                 Jogar
-                             </button>
-                        </li>
-                        
-                        ))}
-                        </ul>
+                    
+                        </div>
+                        </div>
                 </div>
 
 

@@ -131,22 +131,28 @@ export default class Home extends React.Component{
           
             >
               <Nav isLoggedIn={isLoggedIn} history={this.props.history} />
-              <div className='mt-3 pt-2 d-flex'>
+              <div className='mt-3 pt-2 d-flex mb-3'>
                  {!!isLoggedIn ? <div
                   style={{
                     width:'100%',
                     height:"100%"
                 }}
-                 >Desafie o sistema !
+                 >
 
          
 
               
 
-<div className='d-flex d-md-row'>
+
+{this.state.play === false &&
+    <div className='d-flex flex-column justify-content-center mt-5 m-2'>
+    <div className='d-flex m-2 flex-column justify-content-center align-items-center'>
+    <h1 className='text-center font-weight-bold mb-5'>Desafie o sistema !</h1>
 <Dropdown>
   <Dropdown.Toggle variant="danger" id="dropdown-basic">
- Dificuldade
+    {difficulty===0 && <div>Fácil </div>}
+    {difficulty===1 && <div>Médio </div>}
+    {difficulty===2 && <div>Díficil </div>}
   </Dropdown.Toggle>
 
   <Dropdown.Menu>
@@ -168,34 +174,20 @@ export default class Home extends React.Component{
 </Dropdown>
 
    
-{difficulty===0 && <div style={{
-    background:"orange",
-    borderRadius:"10px",
-    padding:"5px"
-    }}>Fácil </div>}
-{difficulty===1 && <div 
- style={{
-    background:"orange",
-    borderRadius:"10px",
-    padding:"5px"
-    }}
->Médio </div>}
-{difficulty===2 && <div
- style={{
-    background:"orange",
-    borderRadius:"10px",
-    padding:"5px"
-    }}
->Díficil </div>}
+
 <button
 onClick={e=>{
     this.handlePlay(difficulty)
     this.setState({play:true})
 }}
-className='btn btn-danger ml-2'>
+className='button_alternativa p-4 align-self-center mt-5'
+> 
     Jogar
 </button>
 </div>
+
+</div>
+}
 
 
 
@@ -220,6 +212,7 @@ className='btn btn-danger ml-2'>
         isAgainstSystem={true}
         isChallange={false}
         difficulty={this.state.difficulty}
+        history={this.props.history}
         />
     }
   </div>

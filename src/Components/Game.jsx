@@ -26,6 +26,7 @@ export default class Game extends React.Component{
         show_img3:false,
         finish:false,
         points:0,
+        changed_points:0,
     }
 
     componentDidMount(){
@@ -75,6 +76,8 @@ export default class Game extends React.Component{
                 await api.patch(`rank/${points_id}/`,data)
                     .then(res=>{
                         alert('Pontos alterados com sucesso')
+                        this.setState({ changed_points:1})
+                       
                     })
                     .catch(err=>{
                         alert("Erro")
@@ -134,9 +137,9 @@ export default class Game extends React.Component{
                 {!!show_img1 && 
                 <div>
 
-                    <div className='d-flex justify-content-betweeb'>
+                    <div className='d-flex justify-content-between'>
                     <img 
-                className='rounded mx-auto d-block rounded-circle'
+                className='imagem'
                 src={this.props.url_img1}
                 width='600px'
                 height='500px'
@@ -192,9 +195,9 @@ export default class Game extends React.Component{
 
               {!!show_img2 &&
               <div>
-                                       <div className='d-flex justify-content-betweeb'>
+                                       <div className='d-flex justify-content-between'>
                     <img 
-                className='rounded mx-auto d-block rounded-circle'
+                className='imagem'
                 src={this.props.url_img2}
                 width='600px'
                 height='500px'
@@ -249,9 +252,9 @@ export default class Game extends React.Component{
 
               {!!show_img3 && 
               <div>
-                                        <div className='d-flex justify-content-betweeb'>
+                                        <div className='d-flex justify-content-between'>
                     <img 
-                className='rounded mx-auto d-block rounded-circle'
+                className='imagem'
                 src={this.props.url_img3}
                 width='600px'
                 height='500px'
@@ -316,11 +319,12 @@ export default class Game extends React.Component{
               {!!finish &&  this.props.isChallange===false &&
               
               <div className='align-self-center'>
-                 <h3 className='text-center font-weight-bold'> Resultado: {this.state.points}</h3>
+                 <h3 className='text-center font-weight-bold m-4'> <p style={{color:"white"}}>Resultado: {this.state.points} pontos</p></h3>
 
               {!!this.props.isAgainstSystem &&
                <div className='d-flex justify-content-center'>
                   <button 
+                  className='btn btn-danger'
                   onClick={e=>this.handlePoints(e)}
                   > Deseja salvar seus pontos ?</button>
               </div>
@@ -333,6 +337,8 @@ export default class Game extends React.Component{
         <div> 
            <p className='text-center font-weight-bold'> Você fez {points} pontos</p>
         </div>}
+
+        {this.state.changed_points === 1 && this.props.history.push('/Rank')}
                 
             </div>
         )

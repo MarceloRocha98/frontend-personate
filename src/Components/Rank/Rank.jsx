@@ -9,6 +9,7 @@ export default class Rank extends React.Component{
     }
 
     async componentDidMount(){
+       
         const payload=JSON.parse(localStorage.getItem('__userKey'))
 
         // console.log(payload.token)
@@ -88,20 +89,23 @@ export default class Rank extends React.Component{
                         <Nav isLoggedIn={this.state.isLoggedIn} />
 
                         <div className='mt-5 pt-3'>
-                            <h2 className='text-center font-weight-bold'>Rank</h2>
+                            <h1 className='text-center font-weight-bold'>Rank</h1>
                         {listPoints.length !== 0 && 
                  
                  <div>
                      {listPoints.map(e=>(
                          
-                         <ul>
-                         <li>Nome :{e.user_id}</li>
-                         <li>Pontos: {e.points}</li>
-                         <li>Dificuldade: {e.difficulty}</li>
-                         <li>Data: {e.data}</li>
-                     </ul>
+                         <div class="card text-white bg-dark mb-3 m-5" style={{width: "18rem;"}}>
+  <div class="card-header">{e.user_id}</div>
+  <div class="card-body">
+    <h5 class="card-title">Dificuldade: {e.difficulty}</h5>
+    <p class="card-text">Fez  {e.points} pontos em {e.data} </p>
+  </div>
+</div>
                      ))}
                  </div>}
+
+                
                      </div>
 
                     </div>
