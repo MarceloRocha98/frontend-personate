@@ -31,7 +31,7 @@ export default class GamesCreated extends React.Component{
             <div className='d-flex flex-column'>
                 <Nav isLoggedIn={true} />
 
-        <h1 className='text-center mt-4 mb-5'>Jogos criados</h1>
+        <h1 className='text-center mt-4 mb-5'>Jogos criados por outros usuários</h1>
                 <div className='mt-3 d-flex flex-column jogoscriados  justify-content-center'>
 
     
@@ -60,7 +60,7 @@ export default class GamesCreated extends React.Component{
                         <div>
                         <button
                         style={{width:"90%"}}
-                        className='btn btn-danger align-self-center m-2'
+                        className='button_alternativa align-self-center m-2'
                     onClick={e=>this.props.history.push("/Create")}
                     >
                         Criar novo jogo</button>

@@ -2,6 +2,7 @@ import React from 'react'
 import Nav from '../templates/Nav'
 import api from '../../services/api'
 import Game from '../Game'
+import trofeu from '../../assets/copo.png'
 
 export default class Challanges extends React.Component{
     state={
@@ -12,6 +13,17 @@ export default class Challanges extends React.Component{
         play2:false,
         sortedGames:[],
         sortedGames2:[],
+        loading:true,
+        loading2:true,
+        rank:[],
+        chal_win:-1,
+        allusers:[],
+        count:0,
+        offset:5,
+        page:1,
+        prevPage:1,
+        arrayPages:0,
+
     }
     
     async componentDidMount(){
@@ -98,6 +110,7 @@ export default class Challanges extends React.Component{
                 this.setState({
                     challanges_info:usersChallangers,
                     challanged_info:usersChallangeds,
+                    loading:false,
                 })
                 // console.log(usersChallangers)
                 console.log(usersChallangeds)
@@ -113,12 +126,145 @@ export default class Challanges extends React.Component{
                 .then(res=>{
                     let users=res.data
                     users=users.filter(user=> user.id !== payload.id)
-                    this.setState({users})
+                    this.setState({allusers:users})
+                    this.setState({users:users.slice(0,5)})
+
                 })
 
 
 
+                ////////////////////////////////rank
+            let rank=[]
+            await api.get('person/') 
+                .then(async res=>{
+                    let personData=res.data
+                    let maior=-1
+                    let ids=[]
+                    let rankParcial=[]
+                    let i=0
 
+
+                    if(personData.length>=3){
+                        let i=0
+                        let ids=[]
+                        while(rank.length<3){
+                            i+=1
+                           
+                            personData.map(async e=>{
+                                
+                                if(e.chal_win>maior && ids.indexOf(e.id)===-1){
+                                    maior=e.chal_win
+                                    rankParcial.push({user_id:e.user_id,chal_win:maior})
+                                    console.log(rankParcial)
+                                    ids.push(e.id)
+                                }
+                            })
+                            
+                            if(rank.length===0 && i==1){
+                                
+                                let lastId=ids[ids.length-1]
+                                ids=[]
+                                ids.push(lastId)
+                                maior=-1
+                                rank.push(rankParcial[rankParcial.length-1])
+                                console.log(ids)
+                                   
+                             
+                            }
+                            if(rank.length===1 && i==2){
+                                
+                                    let firstId=ids[0]
+                                    let lastId=ids[ids.length-1]
+                                    maior=-1
+                                    ids=[]
+                                    ids.push(firstId)
+                                    ids.push(lastId)
+                                    rank.push(rankParcial[rankParcial.length-1])
+                                    console.log(ids)
+                                    console.log(rankParcial)
+                                
+                            }
+                            if(rank.length===2 && i==3){
+                                
+                                    rank.push(rankParcial[rankParcial.length-1])
+                                    this.setState({rank})
+                               
+                            }
+
+                        }
+                      
+                        console.log(this.state.rank)
+
+                        //trocar id pelo nome do usuario do rank
+                        let newRank=[]
+                        let func=rank.map(async em=>{
+                            await api.get(`users/${em.user_id}/`)
+                                .then(user=>{
+                                    // console.log(user)
+                                     newRank.push({username:user.data.username,chal_win:em.chal_win})
+                                })
+                        })
+                        console.log(newRank)
+                        this.setState({rank:newRank,loading2:true})
+
+                        let promise2 = new Promise(function (resolve, reject) {
+                            // the function is executed automatically when the promise is constructed
+                      
+                            // after 1 second signal that the job is done with the result "done"
+                            setTimeout(() => resolve("done"), 2500);
+                        });
+                        Promise.all([func,promise2]).then((e) => {  // pra resolver o problema do tempo
+                        
+            
+                            this.setState({rank:newRank,loading2:false})
+                            console.log(newRank)
+                    
+                        })
+                    }
+               
+                }).catch(err=>alert('erro'))
+
+
+                await api.get(`person/`)
+                    .then(e=>{
+                        const response=e.data
+                        let person=response.filter(person=>{
+                            if(person.user_id===payload.id){
+                                this.setState({chal_win:person.chal_win})
+                            }
+                        })
+                       
+                            // console.log(this.state.chal_win)
+                            // console.log(person)
+                        
+                    })
+
+                 
+
+                    ////paginação
+                    const count=this.state.allusers.length
+                    const offset=this.state.offset
+                    console.log(count)
+                    
+                    const totalPages = Math.ceil(count / offset)
+                    console.log(totalPages)
+                    const pages = []
+                    for (let i = 1; i <= totalPages; i++) {
+                    pages.push(i)
+                    }
+                    console.log(pages)
+                    this.setState({ arrayPages: pages })
+
+                    }
+
+    async componentDidUpdate(){
+        const payload=JSON.parse(localStorage.getItem('__userKey'))
+        const { page, prevPage, users,allusers,offset} = this.state
+
+        if (!(page === prevPage)) {
+            let newUsers=allusers.slice((page * offset - offset,page*offset))
+            this.setState({users:newUsers,prevPage:page})
+        }
     }
 
     async handleRefuse(id){
@@ -244,37 +390,97 @@ export default class Challanges extends React.Component{
     }
 
 
+    async handleDelete(id){
+        let challanges_info=this.state.challanges_info
+        let challanged_info=this.state.challanged_info //desafiados
+
+        await api.delete(`Challanges/${id}/`)
+            .then(res=>{
+                alert('Sucesso! Atualize a pagina para novas informações')
+                // if(isChallanges === true){
+                //     challanges_info=challanges_info.filter(e=>e.challange_id !== id)
+                //     this.setState({challanges_info})
+                // }else{
+                //     challanged_info=challanged_info.filter(e=>e.challange_id !== id)
+                //     this.setState({challanged_info})
+                // }
+                
+            }).catch(err=>console.log(err.response.data))
+    }
+
+
     render(){
-        const {challanges_info, users, sortedGames,challanged_info, sortedGames2,play2 } = this.state //username,user_id,accepted,challange_id tem no challanges_info
+        const {arrayPages,chal_win,rank,loading2,loading,challanges_info, users, sortedGames,challanged_info, sortedGames2,play2 } = this.state //username,user_id,accepted,challange_id tem no challanges_info
+        
+        if (loading || loading2) {
+            return (
+              <div className='m-3 p-3 d-flex flex-column'>
+      
+      
+              <h1 className='text-center font-weight-bold'>Carregando
+              </h1>
+                <h5 style={{color:"white"}} className='text-center font-weight-bold'>Um momento, estamos preparando tudo para você</h5>
+                <p  style={{color:"white"}} className='text-muted text-center'> Caso esteja nessa página há muito tempo, tente atualiza-la</p>
+                <i class="fa fa-spinner fa-spin fa-3x fa-fw align-self-center m-3" style={{fontSize:'300px'}}></i>
+                <span class="sr-only">Loading...</span>
+      
+              </div>
+      
+            )
+          }
+        
         return(
             <div className='d-flex flex-column'>
                 <Nav isLoggedIn={true} />
 
                 <div className='d-flex mb-5 flex-column align-self-center mt-4 pt-2 justify-content-center'>
                 
-                        {challanges_info.length !== 0 && <p className='text-center'> Vc foi desafiado!</p>}
-                        <div className='d-flex flex-column'>
-                   
+                <div className='align-self-center mb-4'>
+        {rank.length !== 0 && 
+        <div>  
+            <ol>
+              <img src={trofeu} alt="trofeu" style={{width:'200px'}}/>
+          {rank.map(e=>(
+                  <li className='logotipo text-center' style={{color:"white"}}>{e.username} com  {e.chal_win} desafios ganhos</li>
+                
+                  ))}    
+                 
+             </ol>
+        </div>}
+        </div>
+
+        <div>
+            {chal_win !== -1 && <p className='logotipo text-center txt'>Você tem {chal_win} desafios ganhos </p>}
+        </div>
+                        
+                        {challanges_info.length !== 0 && <h1 className=' mb-4 text-center mb-5'> Desafios feitos para você</h1>}
+                        <div className='d-flex flex-column mb-4'>
+         
                             {challanges_info.map(e=>(
 
                           
                                 <div className='d-flex flex-column justify-content-center mb-4'>
-
+            
                                 {e.accepted === false &&
-                                <div className='d-flex justify-content-center'>
-                                <p className='text-center'>   {e.username} te chamou pro x1</p>
+                                <div className='d-flex justify-content-center div_vermelho_claro'>
+                                  
+                                <p className=' txt text-center'>   {e.username} te confrotou</p>
                                       <button
+                                      className='button_aceitar'
                                onClick={event=>this.handleAccept(e.challange_id)}
                                >Aceitar</button>
                                <button
+                               className='button_recusar'
                                onClick={event=>this.handleRefuse(e.challange_id)}
                                >Recusar</button>
                                </div>}
 
                                <div className='d-flex flex-column'>
                                {e.challanged_finish === false && e.accepted === true &&
-                                <div>
+                                <div className='d-flex flex-column'>
+                                   <p className='text-center txt'> Você aceitou o desafio contra {e.username}</p>
                                     <button
+                                    className='button_alternativa  align-self-center'
                                     onClick={e=>{
                                         this.handlePlay(2)
                                         this.setState({play:true})
@@ -301,18 +507,20 @@ export default class Challanges extends React.Component{
         isAgainstSystem={false}
         difficulty={this.state.difficulty}
         isChallange={true}
+        isChallanger={false}
         challange_id={e.challange_id}
         />
     }
                                 </div>
                                }
                                {e.challanged_finish === true && e.challanger_finish === false &&
-                                <p className='text-center'>
+                                <p className='text-center txt '>
+                            
                                 Você fez {e.challanged_points} pontos   contra o {e.username}
                                 </p>}
                                {e.challanger_finish === false && e.accepted === true &&
                                <div>
-                                   <p className='text-muted text-center'>O {e.username} ainda não jogou</p>
+                                   <p className=' txt text-muted text-center'>O {e.username} ainda não jogou</p>
                                </div>
                                }
 
@@ -320,17 +528,35 @@ export default class Challanges extends React.Component{
                                <div>
                                    {e.challanged_points>e.challanger_points &&
                                    <div>
-                                       Parabéns, você ganhou o desafio! Você fez {e.challanged_points} pontos e o {e.username} fez {e.challanger_points} pontos
+                                   <button 
+                                   className='btn btn-danger float-right'
+                                   onClick={event=>this.handleDelete(e.challange_id)}
+                                   ><i class="fa fa-trash-o" aria-hidden="true"></i>
+                                   </button>
+                                       <p className="txt text-center font-weight-bold">Você foi desafiado por {e.username} </p>
+                                       <p className="txt text-center">Parabéns, você ganhou o desafio! Você fez {e.challanged_points} pontos e o {e.username} fez {e.challanger_points} pontos</p>
 
                                   </div>}
                                    {e.challanged_points<e.challanger_points &&
                                    <div>
-                                        Você perdeu o desafio, tendo feito {e.challanged_points} pontos enquanto que o {e.username} fez {e.challanger_points} pontos
+                                           <button 
+                                   className='btn btn-danger float-right'
+                                   onClick={event=>this.handleDelete(e.challange_id)}
+                                   ><i class="fa fa-trash-o" aria-hidden="true"></i>
+                                   </button>
+                                          <p className="txt text-center font-weight-bold">Você foi desafiado por {e.username} </p>
+                                        <p className="txt text-center">Você perdeu o desafio, tendo feito {e.challanged_points} pontos enquanto que o {e.username} fez {e.challanger_points} pontos</p>
                                   </div>}
                                    {e.challanged_points===e.challanger_points &&
                                    <div>
-                                        Vocês empataram!
-                                        Você e o {e.username} fizeram {e.challanged_points} pontos 
+                                           <button 
+                                   className='btn btn-danger float-right'
+                                   onClick={event=>this.handleDelete(e.challange_id)}
+                                   ><i class="fa fa-trash-o" aria-hidden="true"></i>
+                                   </button>
+                                         <p className="txt text-center font-weight-bold">Você foi desafiado por {e.username} </p>
+             
+                                      <p className="txt text-center">Empate! Você e o {e.username} fizeram {e.challanged_points} pontos</p> 
                                   </div>}
                               </div>}
                               </div>
@@ -347,21 +573,23 @@ export default class Challanges extends React.Component{
 
         <div>
             <hr />
-
+                                   
             {challanged_info.length !== 0 && 
             <div className='mb-5'>
+                <h1 className='text-center mb-5'>Desafios feitos por você !</h1>
                  {challanged_info.map(e=>(
                      <div className='d-flex flex-column mb-4'>
-                         <p className='text-center'>Você desafiou {e.username}</p>
+                         <p className=' txt text-center font-weight-bold'>Você desafiou {e.username}</p>
                             {e.accepted === false &&
                             <div>
-                               <p className='text-center'> Ele ainda não aceitou o desafio</p>
+                               <p className=' txt text-center'> Ele ainda não aceitou o desafio</p>
                             </div>}
 
                             {e.challanger_finish === false && e.accepted === true &&
                             <div className='d-flex flex-column'>
-                                <p className='text-center'> {e.username} aceitou o desafio </p>
+                                <p className=' txt text-center'> {e.username} aceitou o desafio </p>
                             <button
+                            className='button_alternativa align-self-center'
                             onClick={e=>{
                                 this.setState({play2:true})
                                 this.handlePlay2(2)
@@ -401,21 +629,42 @@ export default class Challanges extends React.Component{
                             }
                             {e.challanger_finish === true && e.challanged_finish===false &&
                             <div>
-                                <p className='text-center'>Você realizou sua jogada e fez {e.challanger_points} pontos</p>
-                                <p className='text-center text-muted'>{e.username} ainda não jogou</p>
+                                <p className=' txt text-center'>Você realizou sua jogada e fez {e.challanger_points} pontos</p>
+                                <p className=' txt text-center text-muted'>{e.username} ainda não jogou</p>
                             </div>
                             }
 
                             {e.challanged_finish === true && e.challanger_finish === true &&
                             <div className='d-flex flex-column'>
                                 {e.challanger_points>e.challanged_points &&
-                                <p className='text-center'>Parabéns, você ganhou o desafio, tendo feito {e.challanger_points} pontos contra {e.challanged_points} do {e.username}</p>
+                                <div>
+                                        <button 
+                                   className='btn btn-danger float-right'
+                                   onClick={event=>this.handleDelete(e.challange_id)}
+                                   ><i class="fa fa-trash-o" aria-hidden="true"></i>
+                                   </button>
+                                <p className=' txt text-center'>Parabéns, você ganhou o desafio, tendo feito {e.challanger_points} pontos contra {e.challanged_points} do {e.username}</p>
+                                </div>
                                 }
                                 {e.challanger_points<e.challanged_points &&
-                                <p className='text-center'>Você perdeu o desafio, tendo feito {e.challanger_points} contra {e.challanged_points} do {e.username}</p>
+                                 <div>
+                                    <button 
+                                   className='btn btn-danger float-right'
+                                   onClick={event=>this.handleDelete(e.challange_id)}
+                                   ><i class="fa fa-trash-o" aria-hidden="true"></i>
+                                   </button>
+                                <p className=' txt text-center'>Você perdeu o desafio, tendo feito {e.challanger_points} contra {e.challanged_points} do {e.username}</p>
+                               </div>
                                 }
                                 {e.challanger_points===e.challanged_points &&
-                                <p className='text-center'>Empate, ambos fizeram {e.challanger_points}</p>
+                                 <div>
+                                    <button 
+                                   className='btn btn-danger float-right'
+                                   onClick={event=>this.handleDelete(e.challange_id)}
+                                   ><i class="fa fa-trash-o" aria-hidden="true"></i>
+                                   </button>
+                                <p className=' txt text-center'>Empate, ambos fizeram {e.challanger_points} pontos</p>
+                                </div>
                                 }
                             </div>}
 
@@ -431,18 +680,80 @@ export default class Challanges extends React.Component{
 
 
 
-                        <div className='d-flex mt-5 pt-5'>
+                        <div className='d-flex mt-5 pt-5 div_verde_claro'>
 
-                            Desafie alguém!
+                          <p className="txt logotipo" style={{fontSize:"25px"}}>  Desafie alguém!</p>
                             <ul>
                                 {users.map(user=>(
-                                    <li>
-                                        {user.username}
+                                    <li className='mb-5 d-flex flex-column justify-content-center'>
+                                       <p className="txt text-center"> {user.username}</p>
                                         <button
+                                        className='button_alternativa2'
                                         onClick={e=>this.handleChallange(user.id)}
                                         >Desafiar</button>
                                     </li>
                                     ))}
+
+
+
+
+<nav aria-label="Page navigation example" className='m-3'>
+              <ul className="pagination justify-content-end">
+
+                <li className="page-item cursor">
+                  <a className="page-link"
+                    onClick={e => {
+                      const prevPage = this.state.page
+                     if(prevPage-1>=0){
+                        this.setState({ page: prevPage - 1 })
+                        this.setState({ prevPage })
+                     }
+                    }}
+                    tabindex="-1" aria-disabled="true">Anterior</a>
+                </li>
+
+                {
+                  arrayPages.map(page => (
+                    // <li key={page}>
+                    //   <button onClick={e => {
+                      //     const prevPage=this.state.page
+                      //     this.setState({prevPage})
+                    //     this.setState({ page: page })
+                    
+                    //   }}> {page}</button>
+                    // </li>
+                    <li className="page-item cursor"
+                    onClick={e => {
+                      const prevPage = this.state.page
+                        this.setState({ prevPage })
+                        this.setState({ page:page-1 })
+                        
+                      }}
+                      ><a className="page-link">{page}</a></li> 
+                      ))
+                    }
+
+                <li className="page-item cursor">
+                  <a className="page-link"
+                    onClick={e => {
+                      const prevPage = this.state.page
+                      if(prevPage+1<arrayPages.length){
+                        this.setState({ page: prevPage + 1 })
+                        this.setState({ prevPage })
+                      }
+                    }}
+                    >Próxima</a>
+                </li>
+
+              </ul>
+            </nav>
+
+
+
+
+
+
+
                             </ul>
 
                         </div>

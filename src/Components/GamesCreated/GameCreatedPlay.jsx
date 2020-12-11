@@ -55,7 +55,7 @@ export default class GamesCreated extends React.Component{
 
                     <Nav />
                     </div>
-                   <h3 className='text-center font-weight-bold'> {game.game_name}</h3>
+                   <h1 className='text-center font-weight-bold mb-2'> {game.game_name}</h1>
                     <Game 
     url_img1={game.url_img1} 
     url_img2={game.url_img2} 
@@ -73,6 +73,7 @@ export default class GamesCreated extends React.Component{
     nome_certo_img2={game.nome_certo_img2}
     nome_certo_img3={game.nome_certo_img3}
     isGameCreated={true}
+    history={this.props.history}
     />
 
              </div>

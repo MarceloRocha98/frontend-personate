@@ -6,6 +6,7 @@ export default class Rank extends React.Component{
     state={
         listPoints:[],
         isLoggedIn:false,
+        loading:true,
     }
 
     async componentDidMount(){
@@ -48,7 +49,7 @@ export default class Rank extends React.Component{
                             dificuldade='Médio'
                         }
                         if(e.difficulty===2){
-                            dificuldade='Díficil'
+                            dificuldade='Difícil'
                         }
                         newInfoObj.user_id=user.data.username
                         newInfoObj.points=e.points
@@ -71,6 +72,7 @@ export default class Rank extends React.Component{
             Promise.all([infoFunc, promise]).then((e) => {  // pra resolver o problema do tempo
               console.log(newInfo)
               this.setState({ listPoints:newInfo})    
+              this.setState({ loading:false})    
             //   console.log(test)
             })
 
@@ -81,7 +83,24 @@ export default class Rank extends React.Component{
 
     render(){
         
-        const {listPoints } = this.state
+        const {loading,listPoints } = this.state
+
+        if (loading) {
+            return (
+              <div className='m-3 p-3 d-flex flex-column'>
+      
+      
+              <h1 className='text-center font-weight-bold'>Carregando
+              </h1>
+                <h5 style={{color:"white"}} className='text-center font-weight-bold'>Um momento, estamos preparando tudo para você</h5>
+                <p  style={{color:"white"}} className='text-muted text-center'> Caso esteja nessa página há muito tempo, tente atualiza-la</p>
+                <i class="fa fa-spinner fa-spin fa-3x fa-fw align-self-center m-3" style={{fontSize:'300px'}}></i>
+                <span class="sr-only">Loading...</span>
+      
+              </div>
+      
+            )
+          }
 
         return(
                     <div>

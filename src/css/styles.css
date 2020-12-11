@@ -33,6 +33,14 @@ body {
     display: flex;
     flex-direction: column;
   }
+  .content-createGame{
+    margin-bottom: 100px;
+    padding-bottom: 100px;
+  }
+  /* .ajuste{
+    display: flex;
+    flex-direction: row;
+  } */
 }
 
 .logotipo { 
@@ -52,6 +60,9 @@ p {
   font-size: 20px;
   
 }
+.txt{
+  color: #FFFFFF;
+}
 
 ul{
   list-style: none;
@@ -60,7 +71,7 @@ ul{
 
 .div_verde_claro {
   font-family: times new roman;
-  width: 28%;
+  /* width: 28%; */
   border-radius: 41px;
   padding:1.5%;
   float:left;
@@ -71,7 +82,7 @@ ul{
 
 .div_vermelho_claro {
   font-family: times new roman;
-  width: 29%;
+  /* width: 29%; */
   border-radius: 41px;
   padding:1.5%;
   float:left;
@@ -103,8 +114,26 @@ ul{
   color:#FFFFFF;
   font-size: 20px;
 }
+.button_alternativa2 {
+  position: relative;
+  /* width: 20%; */
+  border-radius: 41px;
+  padding:10%;
+  margin-left: 2%; 
+  margin-right: 2%; 
+  background: rgba(119, 7, 7, 0.6);
+  color:#FFFFFF;
+  font-size: 20px;
+}
+
+a{
+  cursor: pointer;
+}
 
 .button_alternativa:hover{
+  background-color: rgb(31, 27, 26)
+}
+.button_alternativa2:hover{
   background-color: rgb(31, 27, 26)
 }
 
@@ -118,8 +147,14 @@ ul{
   display: block;
   float:left;
   background: rgba(30,255, 30,0.80);
+  color: #FFFFFF;
 }
-
+.button_aceitar:hover{
+  background-color: rgb(31, 27, 26)
+}
+.button_recusar:hover{
+  background-color: rgb(31, 27, 26)
+}
 .button_recusar {
   position: relative;
   width: 29%;
@@ -130,6 +165,7 @@ ul{
   display: block;
   float:left;
   background: rgba(255,10, 10,0.80);
+  color: #FFFFFF;
 }
 
 .button_sair {

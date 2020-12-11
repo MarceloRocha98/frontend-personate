@@ -101,6 +101,11 @@ export default class Game extends React.Component{
 
     async handleChallange(id){
         const payload=JSON.parse (localStorage.getItem('__userKey'))
+        const token=payload.token
+        
+  
+        api.defaults.headers.common['Authorization'] = `Token ${token}`
+
         let data={}
 
         if(this.props.isChallanger ===false){
@@ -124,6 +129,64 @@ export default class Game extends React.Component{
                     .catch(err=>{
                         console.log(err.response.data)
                     })
+
+            // atualizar numero de desafios ganhos
+            await api.get(`Challanges/${id}/`)
+                    .then(async res=>{
+                       const response=res.data
+                       if(response.challanger_finish ===  true && response.challanged_finish === true){
+                        
+                       let pointsChallanger=response.challanger_points
+                       let pointsChallanged=response.challanged_points
+
+                       if(pointsChallanger>pointsChallanged){
+                           await api.get('person/')
+                            .then(async person=>{
+                                let pointsBefore=0
+                                let challangerHadWins = false
+                                let person_id=0
+                               person.data.forEach(e=> {
+                                   if(e.user_id===response.challanger_id){
+                                        pointsBefore=e.chal_win
+                                        challangerHadWins = true
+                                        person_id=e.id
+                                   }
+                               })
+                               if(challangerHadWins){
+                                   await api.patch(`person/${person_id}`,{chal_win:pointsBefore+=1}).catch(msg=>alert('erro'))
+                               }else{
+                                   await api.post(`person/`,{user_id:response.challanger_id,chal_win:1}).catch(msg=>alert('erro2'))
+                               }
+                            }).catch(msg=>alert('erro3'))
+                           
+                       }
+                       if(pointsChallanger<pointsChallanged){
+                        await api.get('person/')
+                        .then(async person=>{
+                            console.log(person)
+                            let pointsBefore=0
+                            let challangedHadWins = false
+                            let person_id=0
+                           if(person.data){
+                            person.data.forEach(e=> {
+                               
+                                if(e.user_id===response.challanged_id){
+                                     pointsBefore=e.chal_win
+                                     challangedHadWins = true
+                                     person_id=e.id
+                                }
+                            })
+                           }
+                           if(challangedHadWins){
+                               await api.patch(`person/${person_id}/`,{chal_win:pointsBefore+=1}).catch(msg=>alert('erro'))
+                           }else{
+                               await api.post(`person/`,{user_id:response.challanged_id,chal_win:1})
+                                .catch(msg=>alert('erro2'))
+                           }
+                        }).catch(msg=>alert('erro3'))
+                       }
+                       }
+                    })
     }
 
 
@@ -133,7 +196,7 @@ export default class Game extends React.Component{
 
         return(
             <div className='game'>
-
+                {finish===false && <h1 className='text-center'>Quem é o personagem ?</h1>}
                 {!!show_img1 && 
                 <div>
 
@@ -319,7 +382,7 @@ export default class Game extends React.Component{
               {!!finish &&  this.props.isChallange===false &&
               
               <div className='align-self-center'>
-                 <h3 className='text-center font-weight-bold m-4'> <p style={{color:"white"}}>Resultado: {this.state.points} pontos</p></h3>
+                 <h1 className='text-center font-weight-bold m-4'>  Resultado: {this.state.points} pontos</h1>
 
               {!!this.props.isAgainstSystem &&
                <div className='d-flex justify-content-center'>
@@ -334,8 +397,11 @@ export default class Game extends React.Component{
         </div>
                   }
         {!!this.props.isGameCreated && !!finish &&
-        <div> 
-           <p className='text-center font-weight-bold'> Você fez {points} pontos</p>
+        <div className='d-flex flex-column'> 
+         <h1 className='text-center font-weight-bold m-4'> Você fez {points} pontos</h1>
+         <button 
+         onClick={e=>this.props.history.push('/GamesCreated')}
+         className='button_alternativa align-self-center'> Voltar </button>
         </div>}
 
         {this.state.changed_points === 1 && this.props.history.push('/Rank')}

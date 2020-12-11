@@ -26,7 +26,7 @@ export default class Navigation extends React.Component{
         return(
             <div className='m-4 pb-3'>
             <Navbar collapseOnSelect expand="lg" bg="light" variant="light" fixed='top'>
-            {name!==''?  <Navbar.Brand href="#home"><p className='d-flex flex-row logotipo'>Personate {name} </p> </Navbar.Brand>: <Navbar.Brand href="#home">Personate </Navbar.Brand>}
+            {name!==''?  <Navbar.Brand href="#home"><p className='d-flex flex-row logotipo'>Personate {name} </p> </Navbar.Brand>: <Navbar.Brand href="#home" className='logotipo'>Personate </Navbar.Brand>}
              <Navbar.Toggle aria-controls="responsive-navbar-nav" />
              <Navbar.Collapse id="responsive-navbar-nav">
                  <Nav className="mr-auto ml-2">

@@ -4,19 +4,23 @@ import api from '../../services/api'
 import {Dropdown} from 'react-bootstrap'
 import Nav from '../templates/Nav'
 import Game from '../Game'
+import Signin from '../Signin/Signin'
+import trofeu from '../../assets/copo.png'
 
 export default class Home extends React.Component{
     state={
         isLoggedIn:false,
 
         //// states testes abaixo
-
+        loading: true,
         points:0,
         listPoints:[],
         difficulty:0,
         finish:false,
         play:false,
         sortedGames:[],
+        listPoints:[],
+        rank:[],
 
 
 
@@ -37,6 +41,194 @@ export default class Home extends React.Component{
         }else{
             this.setState({isLoggedIn:false})
         }
+
+        api.defaults.headers.common['Authorization'] = `Token ${token}`
+
+        await api.get('rank/')
+        .then(res=>{
+            console.log(res)
+            let data=res.data
+            let info=[]
+            data=data.map(e=>{
+
+                let infoObj={}
+                infoObj.user_id=e.user_id
+                infoObj.points=e.points
+                infoObj.difficulty=e.difficulty
+                infoObj.data=e.data
+                info.push(infoObj)
+            })
+            console.log(info)
+            this.setState({listPoints:info})
+
+            let newInfo=[]
+            let infoFunc=
+                info.map(async e=>{
+                let newInfoObj={}
+                await api.get(`users/${e.user_id}/`)
+                    .then(user=>{
+                        // console.log(user)
+                        let dificuldade='Fácil'
+                        if(e.difficulty===1){
+                            dificuldade='Médio'
+                        }
+                        if(e.difficulty===2){
+                            dificuldade='Difícil'
+                        }
+                        newInfoObj.user_id=user.data.username
+                        newInfoObj.points=e.points
+                        newInfoObj.difficulty=dificuldade
+                        newInfoObj.data=e.data
+                        newInfo.push(newInfoObj)
+                        // console.log(user.data.name)
+                        newInfoObj={}
+
+                    })
+                })
+                // console.log(newInfo)
+            
+            let promise = new Promise(function (resolve, reject) {
+                // the function is executed automatically when the promise is constructed
+          
+                // after 1 second signal that the job is done with the result "done"
+                setTimeout(() => resolve("done"), 2000);
+            });
+            Promise.all([infoFunc, promise]).then((e) => {  // pra resolver o problema do tempo
+              console.log(newInfo)
+              this.setState({ listPoints:newInfo})    
+            //   console.log(test)
+            // console.log(this.state.listPoints)
+
+
+
+            // classificação dos 3 primeiros:
+                let hardMode=[]
+                let mediumMode=[]
+                let easyMode=[]
+                let rank=[]
+                let rankUsersId=[]
+
+                hardMode=newInfo.filter(em=> em.difficulty==="Difícil")
+            
+
+                if(hardMode.length !== 0){
+                    let i=0
+                    if(hardMode.length >=3){
+    
+                        while(rank.length <3){
+                            i+=1
+                            hardMode.map((em,indice)=>{
+                                let pointMax=0
+                                if(em.points >= pointMax) {
+                                   if(rankUsersId.indexOf(em.user_id) === -1){
+                                        pointMax=em.points
+                                        rankUsersId=em.user_id
+
+                                        rank.push(em)
+                                        if(i==1 && indice===hardMode.lenght-1){
+                                            rank=rank[rank.length-1]
+                                        }
+                                        if(i==2 && indice===hardMode.lenght-1){
+                                            rank=rank.slice(rank.length-2,rank.length)
+                                        }
+                                        if(i==1 && indice===hardMode.lenght-1){
+                                            rank=rank.slice(rank.length-3,rank.length)
+                                        }
+        
+                                   }
+                               
+                                }
+
+                        })
+                    }
+                    }
+                    if(hardMode.length ===2){
+    
+                        while(rank.length <2){
+                            i+=1
+                            hardMode.map((em,indice)=>{
+                                let pointMax=0
+                                if(em.points >= pointMax) {
+                                   if(rankUsersId.indexOf(em.user_id) === -1){
+                                        pointMax=em.points
+                                        rankUsersId=em.user_id
+
+                                        rank.push(em)
+                                        if(i==1 && indice===hardMode.lenght-1){
+                                            rank=rank[rank.length-1]
+                                        }
+                                        if(i==2 && indice===hardMode.lenght-1){
+                                            rank=rank.slice(rank.length-2,rank.length)
+                                        }
+                                       
+        
+                                   }
+                               
+                                }
+
+                        })
+                    }
+                    }
+                    if(hardMode.length ===1){
+    
+                        while(rank.length <1){
+                            i+=1
+                            hardMode.map((em,indice)=>{
+                                let pointMax=0
+                                if(em.points >= pointMax) {
+                                   if(rankUsersId.indexOf(em.user_id) === -1){
+                                        pointMax=em.points
+                                        rankUsersId=em.user_id
+
+                                        rank.push(em)
+                                        if(i==1 && indice===hardMode.lenght-1){
+                                            rank=rank[rank.length-1]
+                                        }
+                                   
+           
+        
+                                   }
+                               
+                                }
+
+                        })
+                    }
+                    }
+                    this.setState({rank:rank})
+                    this.setState({loading:false})
+                    console.log(rank)
+                }
+            })
+
+        }).catch(err=>{
+            console.log(err)
+        })
+
+
+        //// colocar usuario em person assim q ele entrar pela primeira vez
+
+        if(token !==''){
+            await api.get(`person/`)
+                .then(async res=>{
+        
+                    let data=res.data
+                    let isOnPerson='2'
+                     data.filter(e=>{
+                        if(e.user_id === payload.id){
+                           isOnPerson='1'
+                            
+                        }
+                    })
+                  if(isOnPerson==='2'){
+                    await api.post('person/',{user_id:payload.id}).catch(err=>console.log(err.response.data))
+                  }
+
+
+                    
+
+                }).catch(err=>console.log(err.response.data))
+        }
+        
     }
 
    
@@ -123,12 +315,28 @@ export default class Home extends React.Component{
     }
 
     render(){
-        const {isLoggedIn, points, listPoints,difficulty, sortedGames } = this.state
+        const {loading,isLoggedIn, points, listPoints,difficulty, sortedGames,rank } = this.state
         // console.log(this.props)
+        if (loading) {
+            return (
+              <div className='m-3 p-3 d-flex flex-column'>
+      
+      
+              <h1 className='text-center font-weight-bold'>Carregando
+              </h1>
+                <h5 style={{color:"white"}} className='text-center font-weight-bold'>Um momento, estamos preparando tudo para você</h5>
+                <p  style={{color:"white"}} className='text-muted text-center'> Caso esteja nessa página há muito tempo, tente atualiza-la</p>
+                <i class="fa fa-spinner fa-spin fa-3x fa-fw align-self-center m-3" style={{fontSize:'300px'}}></i>
+                <span class="sr-only">Loading...</span>
+      
+              </div>
+      
+            )
+          }
 
         return(
-            <div
-          
+            <div className=''
+            // d-flex justify-content-center
             >
               <Nav isLoggedIn={isLoggedIn} history={this.props.history} />
               <div className='mt-3 pt-2 d-flex mb-3'>
@@ -145,14 +353,27 @@ export default class Home extends React.Component{
 
 
 {this.state.play === false &&
-    <div className='d-flex flex-column justify-content-center mt-5 m-2'>
+    <div className=' d-flex flex-column ajuste mt-5 m-2'>
+        <div className='align-self-center mb-4'>
+        {rank.length !== 0 && 
+        <div>  
+            <ol>
+              <img src={trofeu} alt="trofeu" style={{width:'200px'}}/>
+          {rank.map(e=>(
+                  <li className='logotipo text-center' style={{color:"white"}}>{e.user_id} com  {e.points} pontos</li>
+                
+                  ))}    
+                 
+             </ol>
+        </div>}
+        </div>
     <div className='d-flex m-2 flex-column justify-content-center align-items-center'>
     <h1 className='text-center font-weight-bold mb-5'>Desafie o sistema !</h1>
 <Dropdown>
   <Dropdown.Toggle variant="danger" id="dropdown-basic">
-    {difficulty===0 && <div>Fácil </div>}
-    {difficulty===1 && <div>Médio </div>}
-    {difficulty===2 && <div>Díficil </div>}
+    {difficulty===0 && <div><i class="fa fa-fire mr-1" style={{color:"white"}} aria-hidden="true"></i>Fácil </div>}
+    {difficulty===1 && <div><i class="fa fa-fire mr-1" style={{color:"white"}} aria-hidden="true"></i>Médio </div>}
+    {difficulty===2 && <div><i class="fa fa-fire mr-1" style={{color:"white"}} aria-hidden="true"></i>Díficil </div>}
   </Dropdown.Toggle>
 
   <Dropdown.Menu>
@@ -219,7 +440,6 @@ className='button_alternativa p-4 align-self-center mt-5'
                  </div>
                  
                  :
-                 
                  <div 
                  style={{
                      width:'100%',
@@ -259,7 +479,8 @@ style={{
 
 
                 </div>
-                 </div>}
+                 </div>
+                }
               </div>
          
             </div>
