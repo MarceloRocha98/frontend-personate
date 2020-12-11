@@ -39,6 +39,7 @@ export default class Home extends React.Component{
         if(token !== ''){
             this.setState({isLoggedIn:true})
         }else{
+            this.setState({loading:false})
             this.setState({isLoggedIn:false})
         }
 
