@@ -20,8 +20,8 @@ export default class Challanges extends React.Component{
         allusers:[],
         count:0,
         offset:5,
-        page:1,
-        prevPage:1,
+        page:0,
+        prevPage:0,
         arrayPages:0,
 
     }

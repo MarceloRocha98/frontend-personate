@@ -41,7 +41,7 @@ export default class Navigation extends React.Component{
 
                  </Nav>
                  {!!this.props.isLoggedIn? 
-                  <Link to='signin'>
+                  <div>
 
                   <button type='button'
                       style={{
@@ -66,7 +66,7 @@ export default class Navigation extends React.Component{
                   className='btn btn-danger'
                   
                   ><i class="fa fa-sign-out mr-1" aria-hidden="true"></i>Deslogar</button>
-                  </Link>:
+                  </div>:
                    <Link to='signin'>
 
                    <button type='button'
