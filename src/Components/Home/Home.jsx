@@ -7,6 +7,7 @@ import Game from '../Game'
 import Signin from '../Signin/Signin'
 import trofeu from '../../assets/copo.png'
 
+
 export default class Home extends React.Component{
     state={
         isLoggedIn:false,
@@ -441,45 +442,22 @@ className='button_alternativa p-4 align-self-center mt-5'
                  </div>
                  
                  :
+
+
+
                  <div 
                  style={{
                      width:'100%',
                      height:"100%"
                  }}
-                 className='d-flex flex-column m-3'
+                 className='m-3'
                  >
                      
-                     <h2 className='text-center font-weight-bold'> Bem vindo ao Personate</h2>
-                     <h3 className='text-muted text-center m-3'> Para uma melhor experiencia, cadastre-se para jogar</h3>
-
-<div
-className='conteiner-home form-conteiner'
-style={{
-    border:"solid 5px",
-    alignSelf:"center",
-    padding:'25px'
-    
-}}
->
+                     <h1 className='text-center font-weight-bold'> Bem vindo ao Personate</h1>
+                    <h3 className='txt logotipo text-center mt-4 ml-5 pl-4'> Acha que entende personagens ? Então vem jogar</h3>
+                     <Signin />
 
 
-<div className="d-flex "
-
->
-
-                     <Link to='/Signin'>
-
-                   <h4 
-                   className='text-left'
-                   style={{
-                       color:"white"
-                   }}
-                   ><i class="fa fa-fire mr-1" style={{color:"red"}} aria-hidden="true"></i>Jogar</h4>
-                     </Link>
-</div>
-
-
-                </div>
                  </div>
                 }
               </div>
