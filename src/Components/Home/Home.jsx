@@ -175,8 +175,46 @@ export default class Home extends React.Component{
                    
              
                    this.setState({rank:rank})
-                    this.setState({loading:false})
+                    this.setState({loading:true})
                     console.log(rank)
+           
+                  
+                        let val0=rank[0]
+                        let val1=rank[1]
+                        let val2=rank[2]
+
+                        if(rank[1].chal_win>rank[0].points){
+                            rank[0]=val1
+                            rank[1]=val0
+
+                            if(rank[1].points<rank[2].points){
+                                rank[2]=val0
+                                rank[1]=val2
+                            }
+
+                            if(rank[1].points>rank[0].points){
+                                rank[0]=val2
+                                rank[1]=val1
+                            }
+                        }else{
+                            if(rank[2].points>rank[1].points){
+                                rank[1]=val2
+                                rank[2]=val1
+                            }
+
+                            if(rank[1].points>rank[0].points){
+                                rank[0]=val2
+                                rank[1]=val0
+                            }
+                        }
+        
+                        this.setState({rank:rank,loading:false})
+                        console.log(rank)
+                
+                  
+
+
+
                 }
             })
 

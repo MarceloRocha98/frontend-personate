@@ -58,7 +58,7 @@ export default function Signin(){
                         
                         localStorage.setItem('__userKey',JSON.stringify(payload))
                         // obs: Authorization na forma : Token {token}
-                        alert('Logado com sucesso !')
+                        // alert('Logado com sucesso !')
                         history.push('/')
                     })
 

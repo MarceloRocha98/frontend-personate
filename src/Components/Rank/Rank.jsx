@@ -7,6 +7,8 @@ export default class Rank extends React.Component{
         listPoints:[],
         isLoggedIn:false,
         loading:true,
+        rank:[],
+        rankChal:[],
     }
 
     async componentDidMount(){
@@ -55,6 +57,7 @@ export default class Rank extends React.Component{
                         newInfoObj.points=e.points
                         newInfoObj.difficulty=dificuldade
                         newInfoObj.data=e.data
+                        newInfoObj.id=e.user_id
                         newInfo.push(newInfoObj)
                         // console.log(user.data.name)
                         newInfoObj={}
@@ -72,18 +75,284 @@ export default class Rank extends React.Component{
             Promise.all([infoFunc, promise]).then((e) => {  // pra resolver o problema do tempo
               console.log(newInfo)
               this.setState({ listPoints:newInfo})    
+            
+
+              //////// os maiores
+              let maior=0
+              let ids=[]
+              let rankParcial=[]
+              let rank=[]
+              let i=0
+
+
+              if(newInfo.length>=5){
+                  let i=0
+                  let ids=[]
+                  while(rank.length<5){
+                      i+=1
+                     
+                      newInfo.map(async e=>{
+                          
+                          if(e.points>=maior && ids.indexOf(e.id)===-1){
+                              maior=e.points
+                              rankParcial.push({user_id:e.user_id,points:maior,data:e.data})
+                              console.log(rankParcial)
+                              ids.push(e.id)
+                          }
+                      })
+                      
+                      if(rank.length===0 && i==1){
+                          console.log(rankParcial)
+                          console.log(`ids ${ids}`)
+                          console.log(rankParcial[rankParcial.length-1])
+                          let lastId=ids[ids.length-1]
+                          ids=[]
+                          ids.push(lastId)
+                          maior=0
+                          rank.push(rankParcial[rankParcial.length-1])
+                          console.log(ids)
+                             
+                       
+                      }
+                      if(rank.length===1 && i==2){
+                          
+                              let firstId=ids[0]
+                              let lastId=ids[ids.length-1]
+                              maior=0
+                              ids=[]
+                              ids.push(firstId)
+                              ids.push(lastId)
+                              rank.push(rankParcial[rankParcial.length-1])
+                              console.log(ids)
+                              console.log(rankParcial)
+                              console.log(rankParcial[rankParcial.length-1])
+                          
+                      }
+                      if(rank.length===2 && i==3){
+                          
+                              let firstId=ids[0]
+                              let secondId=ids[1]
+                              let lastId=ids[ids.length-1]
+                              maior=0
+                              ids=[]
+                              ids.push(firstId)
+                              ids.push(secondId)
+                              ids.push(lastId)
+                              rank.push(rankParcial[rankParcial.length-1])
+                              console.log(ids)
+                              console.log(rankParcial)
+                              console.log(rankParcial[rankParcial.length-1])
+                          
+                      }
+                      if(rank.length===3 && i==4){
+                          
+                              let firstId=ids[0]
+                              let secondId=ids[1]
+                              let thirdId=ids[2]
+                              let lastId=ids[ids.length-1]
+                              maior=0
+                              ids=[]
+                              ids.push(firstId)
+                              ids.push(secondId)
+                              ids.push(thirdId)
+                              ids.push(lastId)
+                              rank.push(rankParcial[rankParcial.length-1])
+                              console.log(ids)
+                              console.log(rankParcial)
+                              console.log(rankParcial[rankParcial.length-1])
+                          
+                      }
+                      if(rank.length===4 && i==5){
+                              console.log(rankParcial)
+                              console.log(rankParcial[rankParcial.length-1])
+                              rank.push(rankParcial[rankParcial.length-1])
+                              this.setState({rank})
+                         
+                      }
+
+                  }
+                
+                  console.log(this.state.rank)
+
+
+               
+                    
+                     
+                      
+                  
+                  this.setState({rank:rank})
+
+              }
+
+
+
+
+
+
+
+
+
+
+
+
+              ////////////////////
+
+            
               this.setState({ loading:false})    
             //   console.log(test)
             })
 
+
+
         }).catch(err=>{
             console.log(err)
         })
+
+
+               ////////////////// rank pro challanges
+
+
+
+
+                 ////////////////////////////////rank
+                 let rank=[]
+                 await api.get('person/') 
+                     .then(async res=>{
+                         let personData=res.data
+                         let maior=-1
+                         let ids=[]
+                         let rankParcial=[]
+                         let i=0
+     
+     
+                         if(personData.length>=5){
+                             let i=0
+                             let ids=[]
+                             while(rank.length<5){
+                                i+=1
+                               
+                                personData.map(async e=>{
+                                    
+                                    if(e.chal_win>=maior && ids.indexOf(e.id)===-1){
+                                        maior=e.chal_win
+                                        rankParcial.push({user_id:e.user_id,chal_win:maior})
+                                        console.log(rankParcial)
+                                        ids.push(e.id)
+                                    }
+                                })
+                                
+                                if(rank.length===0 && i==1){
+                                    console.log(rankParcial)
+                                    console.log(`ids ${ids}`)
+                                    console.log(rankParcial[rankParcial.length-1])
+                                    let lastId=ids[ids.length-1]
+                                    ids=[]
+                                    ids.push(lastId)
+                                    maior=0
+                                    rank.push(rankParcial[rankParcial.length-1])
+                                    console.log(ids)
+                                       
+                                 
+                                }
+                                if(rank.length===1 && i==2){
+                                    
+                                        let firstId=ids[0]
+                                        let lastId=ids[ids.length-1]
+                                        maior=0
+                                        ids=[]
+                                        ids.push(firstId)
+                                        ids.push(lastId)
+                                        rank.push(rankParcial[rankParcial.length-1])
+                                        console.log(ids)
+                                        console.log(rankParcial)
+                                        console.log(rankParcial[rankParcial.length-1])
+                                    
+                                }
+                                if(rank.length===2 && i==3){
+                                    
+                                        let firstId=ids[0]
+                                        let secondId=ids[1]
+                                        let lastId=ids[ids.length-1]
+                                        maior=0
+                                        ids=[]
+                                        ids.push(firstId)
+                                        ids.push(secondId)
+                                        ids.push(lastId)
+                                        rank.push(rankParcial[rankParcial.length-1])
+                                        console.log(ids)
+                                        console.log(rankParcial)
+                                        console.log(rankParcial[rankParcial.length-1])
+                                    
+                                }
+                                if(rank.length===3 && i==4){
+                                    
+                                        let firstId=ids[0]
+                                        let secondId=ids[1]
+                                        let thirdId=ids[2]
+                                        let lastId=ids[ids.length-1]
+                                        maior=0
+                                        ids=[]
+                                        ids.push(firstId)
+                                        ids.push(secondId)
+                                        ids.push(thirdId)
+                                        ids.push(lastId)
+                                        rank.push(rankParcial[rankParcial.length-1])
+                                        console.log(ids)
+                                        console.log(rankParcial)
+                                        console.log(rankParcial[rankParcial.length-1])
+                                    
+                                }
+                                if(rank.length===4 && i==5){
+                                        console.log(rankParcial)
+                                        console.log(rankParcial[rankParcial.length-1])
+                                        rank.push(rankParcial[rankParcial.length-1])
+                                        this.setState({rankChal:rank})
+                                   
+                                }
+          
+                            }
+                          
+                           
+                             console.log(this.state.rank)
+     
+                             //trocar id pelo nome do usuario do rank
+                             let newRank=[]
+                             rank=rank.filter(e=>e.chal_win !== 0)
+                             let func=rank.map(async em=>{
+                                 await api.get(`users/${em.user_id}/`)
+                                     .then(user=>{
+                                         // console.log(user)
+                                          newRank.push({username:user.data.username,chal_win:em.chal_win})
+                                     })
+                             })
+                             console.log(newRank)
+                          
+                               
+                                
+                                 
+                             
+                             this.setState({rankChal:newRank,loading:true})
+     
+                             let promise2 = new Promise(function (resolve, reject) {
+                                 // the function is executed automatically when the promise is constructed
+                           
+                                 // after 1 second signal that the job is done with the result "done"
+                                 setTimeout(() => resolve("done"), 2500);
+                             });
+                             Promise.all([func,promise2]).then((e) => {  // pra resolver o problema do tempo
+                                
+                                 this.setState({rankChal:newRank,loading:false})
+                                 console.log(newRank)
+                         
+                             })
+                         }
+                    
+                     }).catch(err=>alert('erro'))
     }
 
     render(){
         
-        const {loading,listPoints } = this.state
+        const {rankChal,rank,loading,listPoints } = this.state
 
         if (loading) {
             return (
@@ -109,10 +378,28 @@ export default class Rank extends React.Component{
 
                         <div className='mt-5 pt-3'>
                             <h1 className='text-center font-weight-bold'>Rank</h1>
-                        {listPoints.length !== 0 && 
+
+                            {rankChal.length !== 0 && 
+                 
+                 <div className='mt-4'>
+                     <h3 className='txt text-center logotipo mt-5 pt-5'>Nossos melhores desafiantes</h3>
+                     {rankChal.map(e=>(
+                         
+                         <div class="card text-white bg-dark mb-3 m-5" style={{width: "18rem;"}}>
+  <div class="card-header">{e.username}</div>
+  <div class="card-body">
+    <p class="card-text">Tem {e.chal_win} desafios ganhos </p>
+  </div>
+</div>
+                     ))}
+                 </div>}
+
+
+                        {rank.length !== 0 && 
                  
                  <div>
-                     {listPoints.map(e=>(
+                     <h3 className='txt text-center logotipo mt-5 pt-5'>Os melhores contra o sistema </h3>
+                     {rank.map(e=>(
                          
                          <div class="card text-white bg-dark mb-3 m-5" style={{width: "18rem;"}}>
   <div class="card-header">{e.user_id}</div>
