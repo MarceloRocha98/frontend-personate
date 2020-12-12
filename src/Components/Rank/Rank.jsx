@@ -53,10 +53,24 @@ export default class Rank extends React.Component{
                         if(e.difficulty===2){
                             dificuldade='Difícil'
                         }
+
+
+                        let time=e.data
+                        let ano=time.slice(0,4)
+                        let mes=time.slice(5,7)
+                        let dia=time.slice(8,10)
+                        let hora=time.slice(11,13)
+                        let minutos=time.slice(14,16)
+                        hora=parseInt(hora)
+                        hora=hora-3
+                        // hora[0]=hora-3
+                        // console.log(minutos)
+                        let dataAjusted=`${dia}/${mes}/${ano} às ${hora}:${minutos}`
+
                         newInfoObj.user_id=user.data.username
                         newInfoObj.points=e.points
                         newInfoObj.difficulty=dificuldade
-                        newInfoObj.data=e.data
+                        newInfoObj.data=dataAjusted
                         newInfoObj.id=e.user_id
                         newInfo.push(newInfoObj)
                         // console.log(user.data.name)
