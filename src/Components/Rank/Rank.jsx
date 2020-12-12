@@ -109,7 +109,7 @@ export default class Rank extends React.Component{
                           
                           if(e.points>=maior && ids.indexOf(e.id)===-1){
                               maior=e.points
-                              rankParcial.push({user_id:e.user_id,points:maior,data:e.data})
+                              rankParcial.push({user_id:e.user_id,points:maior,data:e.data,difficulty:e.difficulty})
                               console.log(rankParcial)
                               ids.push(e.id)
                           }
