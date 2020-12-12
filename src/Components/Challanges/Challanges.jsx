@@ -161,7 +161,8 @@ export default class Challanges extends React.Component{
                             })
                             
                             if(rank.length===0 && i==1){
-                                
+                                console.log(rankParcial)
+                                console.log(rankParcial[rankParcial.length-1])
                                 let lastId=ids[ids.length-1]
                                 ids=[]
                                 ids.push(lastId)
@@ -182,10 +183,12 @@ export default class Challanges extends React.Component{
                                     rank.push(rankParcial[rankParcial.length-1])
                                     console.log(ids)
                                     console.log(rankParcial)
+                                    console.log(rankParcial[rankParcial.length-1])
                                 
                             }
                             if(rank.length===2 && i==3){
-                                
+                                    console.log(rankParcial)
+                                    console.log(rankParcial[rankParcial.length-1])
                                     rank.push(rankParcial[rankParcial.length-1])
                                     this.setState({rank})
                                
@@ -205,6 +208,11 @@ export default class Challanges extends React.Component{
                                 })
                         })
                         console.log(newRank)
+                     
+                          
+                           
+                            
+                        
                         this.setState({rank:newRank,loading2:true})
 
                         let promise2 = new Promise(function (resolve, reject) {
@@ -214,7 +222,34 @@ export default class Challanges extends React.Component{
                             setTimeout(() => resolve("done"), 2500);
                         });
                         Promise.all([func,promise2]).then((e) => {  // pra resolver o problema do tempo
-                        
+                            let val0=newRank[0]
+                            let val1=newRank[1]
+                            let val2=newRank[2]
+
+                            if(newRank[1].chal_win>newRank[0].chal_win){
+                                newRank[0]=val1
+                                newRank[1]=val0
+
+                                if(newRank[1].chal_win<newRank[2].chal_win){
+                                    newRank[2]=val0
+                                    newRank[1]=val2
+                                }
+
+                                if(newRank[1].chal_win>newRank[0].chal_win){
+                                    newRank[0]=val2
+                                    newRank[1]=val1
+                                }
+                            }else{
+                                if(newRank[2].chal_win>newRank[1].chal_win){
+                                    newRank[1]=val2
+                                    newRank[2]=val1
+                                }
+
+                                if(newRank[1].chal_win>newRank[0].chal_win){
+                                    newRank[0]=val2
+                                    newRank[1]=val0
+                                }
+                            }
             
                             this.setState({rank:newRank,loading2:false})
                             console.log(newRank)

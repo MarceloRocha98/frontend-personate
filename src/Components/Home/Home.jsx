@@ -108,95 +108,73 @@ export default class Home extends React.Component{
                 let mediumMode=[]
                 let easyMode=[]
                 let rank=[]
+                let rankParcial=[]
                 let rankUsersId=[]
+                let maior=0
 
                 hardMode=newInfo.filter(em=> em.difficulty==="Difícil")
             
 
                 if(hardMode.length !== 0){
+                  
                     let i=0
                     if(hardMode.length >=3){
-    
-                        while(rank.length <3){
-                            i+=1
-                            hardMode.map((em,indice)=>{
-                                let pointMax=0
-                                if(em.points >= pointMax) {
-                                   if(rankUsersId.indexOf(em.user_id) === -1){
-                                        pointMax=em.points
-                                        rankUsersId=em.user_id
 
-                                        rank.push(em)
-                                        if(i==1 && indice===hardMode.lenght-1){
-                                            rank=rank[rank.length-1]
-                                        }
-                                        if(i==2 && indice===hardMode.lenght-1){
-                                            rank=rank.slice(rank.length-2,rank.length)
-                                        }
-                                        if(i==1 && indice===hardMode.lenght-1){
-                                            rank=rank.slice(rank.length-3,rank.length)
-                                        }
-        
-                                   }
-                               
+                        let i=0
+                        let ids=[]
+                        while(rank.length<3){
+                            i+=1
+                           
+                            hardMode.map(async e=>{
+                                
+                                if(e.points>maior && ids.indexOf(e.id)===-1){
+                                    maior=e.points
+                                    rankParcial.push({user_id:e.user_id,points:maior})
+                                    console.log(rankParcial)
+                                    ids.push(e.id)
                                 }
-
-                        })
-                    }
-                    }
-                    if(hardMode.length ===2){
-    
-                        while(rank.length <2){
-                            i+=1
-                            hardMode.map((em,indice)=>{
-                                let pointMax=0
-                                if(em.points >= pointMax) {
-                                   if(rankUsersId.indexOf(em.user_id) === -1){
-                                        pointMax=em.points
-                                        rankUsersId=em.user_id
-
-                                        rank.push(em)
-                                        if(i==1 && indice===hardMode.lenght-1){
-                                            rank=rank[rank.length-1]
-                                        }
-                                        if(i==2 && indice===hardMode.lenght-1){
-                                            rank=rank.slice(rank.length-2,rank.length)
-                                        }
-                                       
-        
-                                   }
-                               
-                                }
-
-                        })
-                    }
-                    }
-                    if(hardMode.length ===1){
-    
-                        while(rank.length <1){
-                            i+=1
-                            hardMode.map((em,indice)=>{
-                                let pointMax=0
-                                if(em.points >= pointMax) {
-                                   if(rankUsersId.indexOf(em.user_id) === -1){
-                                        pointMax=em.points
-                                        rankUsersId=em.user_id
-
-                                        rank.push(em)
-                                        if(i==1 && indice===hardMode.lenght-1){
-                                            rank=rank[rank.length-1]
-                                        }
+                            })
+                            
+                            if(rank.length===0 && i==1){
+                                console.log(rankParcial)
+                                console.log(rankParcial[rankParcial.length-1])
+                                let lastId=ids[ids.length-1]
+                                ids=[]
+                                ids.push(lastId)
+                                maior=-1
+                                rank.push(rankParcial[rankParcial.length-1])
+                                console.log(ids)
                                    
-           
-        
-                                   }
+                             
+                            }
+                            if(rank.length===1 && i==2){
+                                
+                                    let firstId=ids[0]
+                                    let lastId=ids[ids.length-1]
+                                    maior=-1
+                                    ids=[]
+                                    ids.push(firstId)
+                                    ids.push(lastId)
+                                    rank.push(rankParcial[rankParcial.length-1])
+                                    console.log(ids)
+                                    console.log(rankParcial)
+                                    console.log(rankParcial[rankParcial.length-1])
+                                
+                            }
+                            if(rank.length===2 && i==3){
+                                    console.log(rankParcial)
+                                    console.log(rankParcial[rankParcial.length-1])
+                                    rank.push(rankParcial[rankParcial.length-1])
+                                    this.setState({rank})
                                
-                                }
+                            }
 
-                        })
+                        }
+    
                     }
-                    }
-                    this.setState({rank:rank})
+                   
+             
+                   this.setState({rank:rank})
                     this.setState({loading:false})
                     console.log(rank)
                 }
